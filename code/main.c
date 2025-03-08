@@ -42,14 +42,88 @@ typedef struct {
 } User;
 
 // function declearation
-void displayMainMenu();
+int login(char *username, int *isAdmin, int *isOrganizer);
+void displayAdminMenu();
 void displayOrganizerMenu();
 void displayParticipantMenu();
 void clearScreen(); // if you want to clear the screen just call it
 void pauseScreen(); // if you want to hold the screen just call it
 
 int main(){
-    printf("Hello World\n");
+    char username[MAX_USERNAME_LEN];
+    int isOrganizer = 0;
+    int isAdmin = 0;
+    int choice;
+    int loggedIn = 0;
+
+    clearScreen();
+    printf("===== WELCOME TO EVENT MANAGEMENT SYSTEM =====\n\n");
+    
+    ////////////////////////////////////////////////
+    /// implement login here 
+    // loggedIn = login(username, &isAdmin, &isOrganizer); 
+
+    /*
+    -set default username and password for admin
+    -sign in and sign up options for organizer and participant
+
+    */
+    ////////////////////////////////////////////////
+
+    // for testing
+    loggedIn = 1;
+
+    while(!loggedIn){
+        printf("Login failed. Try again...\n");
+        // loggedIn = login(username, &isAdmin, &isOrganizer);
+    }
+
+    clearScreen();
+    printf("Welcome %s\n", username);
+    pauseScreen();
+
+    /// main loop
+    while(1){
+        clearScreen();
+        if(isAdmin){
+
+            ////////////////////////////////
+            /// implement Admin Section here
+            ////////////////////////////////
+
+            displayAdminMenu();
+        } else if(isOrganizer){
+            ////////////////////////////////
+            /// implement Organizer Section here
+            ////////////////////////////////
+
+
+            displayOrganizerMenu();
+        } else{
+
+            ////////////////////////////////
+            /// implement Participant Section here
+            ////////////////////////////////
+
+            displayParticipantMenu();
+            //// instructions
+            /*
+            participant menu consists
+            1. show all events
+              - load events from the file  and show
+            2. show available events
+              - load events from the file and show only those events which are not full
+            3. register for an event
+              - ask for event id and register it  if it is vacent
+            4. show my regestered events
+                - load registrations from the file and show only those events which are registered by the user
+            5. cancel registration
+                - ask for event id and cancel the registration
+            6. back to main menu
+            */
+        }
+    }
+
     return 0;
 }
 
