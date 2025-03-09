@@ -21,18 +21,23 @@ struct User
 
 // Function prototypes
 void header();
-void boot();
+void boot(); //Boot Graphics
+
+// User-Info Managment
 void viewinfo(struct User *user);
 void changePassword(struct User *user);    // yet to program this code
 void changeEmail(struct User *user);       // yet to program this code
 void changePhoneNumber(struct User *user); // yet to program this code
 void createAccount();
 int login(struct User *user);
+
+// Banking Functions
 void depositMoney(struct User *user);
 void withdrawMoney(struct User *user);
 void accountStatement(struct User *user);
 void logTransaction(int accountNumber, const char *type, float amount, float balance);
 void updateUserBalance(struct User *user);
+//Input Validation
 int isValidUsername(char *username);
 int isValidPassword(char *password);
 int isValidDateFormat(char *date);
@@ -41,12 +46,15 @@ int isValidEmail(char *email);
 void lowercase(char str[]);
 void continueKey();
 void Bufferflush();
+
+// Main function
 int main()
 {
     struct User currentUser;
     int choice;
     boot();
-System_dash:
+
+    System_dash:
     header();
     // Ask for account creation or login
     printf("\n\t\t\t - - *** NAMASTE *** - - \n\n");
