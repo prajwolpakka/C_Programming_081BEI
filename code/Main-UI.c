@@ -49,11 +49,13 @@ int main()
 System_dash:
     header();
     // Ask for account creation or login
-    printf("\t - - SYSTEM DASH - - \n");
-    printf("\t1. Create Account\n");
-    printf("\t2. Login\n");
-    printf("\t3. Exit\n");
-
+    printf("\n\t\t\t - - *** NAMASTE *** - - \n\n");
+    printf("\t1. Create a Bank Account\n");
+    sleep(1);
+    printf("\t2. Already Have An Accont? Login\n");
+    sleep(1);
+    printf("\t3. Exit Bank\n\n");
+    sleep(1);
     printf("\tEnter your choice: ");
     scanf("%d", &choice);
     Bufferflush();
@@ -91,15 +93,14 @@ System_dash:
     }
 
 // Banking menu for logged-in users
-mainmenu2:
+Customer_dash:
     while (1)
     {
         header();
-        printf("\t - - - HOME - - - \n");
-        printf("\nWelcome, %s!\n", currentUser.username);
+        printf("\nWelcome, %s!\t\t\tCurrent Banance::NPR %.2f \n\n", currentUser.username, currentUser.balance);
         printf("\t1. Deposit Money\n");
         printf("\t2. Withdraw Money\n");
-        printf("\t3. Account Statement\n");
+        printf("\t3. View Transactions\n");
         printf("\t4. Setting\n");
         printf("\t5. Log Out\n");
         printf("\t6. Exit\n");
@@ -123,12 +124,13 @@ mainmenu2:
             {
                 header();
 
-                printf("\t \n- - - SETTINGS - - - \n");
+                printf(" \n\t\t\t- - - SETTINGS - - - \n\n");
                 printf("\t1.Personal Information \n");
                 printf("\t2. Change Password\n");
                 printf("\t3. Change Email\n");
                 printf("\t4. Change Phone Number\n");
-                printf("\t5. Back\n");
+                printf("\t5. Back\n\n");
+                sleep(1);
                 printf("\tEnter your choice: ");
                 scanf("%d", &choice);
                 Bufferflush();
@@ -148,7 +150,7 @@ mainmenu2:
                     break;
 
                 case 5:
-                    goto mainmenu2;
+                    goto Customer_dash;
                 default:
 
                     printf("\tInvalid choice. Please try again.\n");
@@ -231,33 +233,33 @@ void createAccount()
         }
     }
 
- // Get user address
-while (1)
-{
-    printf("\tEnter your address: ");
-    scanf("%s", newUser.address);
-    Bufferflush();
-    lowercase(newUser.address);
-
-    // Check if the address contains only alphanumeric characters
-    int isValid = 1;  // Flag to check validity
-    for (int i = 0; i < strlen(newUser.address); i++)
+    // Get user address
+    while (1)
     {
-        if (!isalnum(newUser.address[i]))
+        printf("\tEnter your address: ");
+        scanf("%s", newUser.address);
+        Bufferflush();
+        lowercase(newUser.address);
+
+        // Check if the address contains only alphanumeric characters
+        int isValid = 1; // Flag to check validity
+        for (int i = 0; i < strlen(newUser.address); i++)
         {
-            isValid = 0;  
-            break;
+            if (!isalnum(newUser.address[i]))
+            {
+                isValid = 0;
+                break;
+            }
+        }
+        if (isValid)
+        {
+            break; // Address is valid
+        }
+        else
+        {
+            printf("Error! Address must contain only alphanumeric characters. Please try again.\n");
         }
     }
-    if (isValid) 
-    {
-        break;  // Address is valid
-    }
-    else
-    {
-        printf("Error! Address must contain only alphanumeric characters. Please try again.\n");
-    }
-}
 
     // Get user email1
     while (1)
@@ -340,6 +342,10 @@ while (1)
     newUser.accountNumber = lastAccNo + 1;
     newUser.balance = 0.0;
 
+    printf("\n\t\t Please wait! Your data is being processed..\n");
+    sleep(1);
+    printf("\t\tAlmost there..\n");
+    sleep(1);
     // Save user details to file
     file = fopen("userdetail.txt", "a"); // opening file in append mode
     if (file == NULL)
@@ -352,7 +358,7 @@ while (1)
 
     printf("\tAccount created successfully!\n");
     printf("\tYour account number is: %d\n", newUser.accountNumber);
-    printf("Press any key to procced to Login Page.");
+    printf("\nPress any key to procced to Login Page.");
     getch();
 }
 
@@ -385,6 +391,8 @@ int login(struct User *user)
     printf("\tEnter your password: ");
     scanf("%s", password);
     Bufferflush();
+    printf("\n\t\tPlease wait....\n");
+    sleep(1);
 
     // Search for the user in the file
     while (fscanf(file, "%d %s %s %s %f %s %s %s", &user->accountNumber, user->username, user->phone, user->password, &user->balance, user->dateOfBirth, user->address, user->email) != EOF)
@@ -460,7 +468,6 @@ void withdrawMoney(struct User *user)
 
     // Update user balance in the file
     updateUserBalance(user);
-    continueKey();
 }
 
 // Function to display account statement (only for the logged-in user)
@@ -539,7 +546,7 @@ void updateUserBalance(struct User *user)
 
     struct User tempUser;
     int userFound = 0;
-    while (fscanf(file, "%d %s %s %s %.2f %s %s %s\n", &tempUser.accountNumber, tempUser.username, tempUser.phone, tempUser.password, &tempUser.balance, tempUser.dateOfBirth, tempUser.address, tempUser.email) == 8)
+    while (fscanf(file, "%d %s %s %s %f %s %s %s\n", &tempUser.accountNumber, tempUser.username, tempUser.phone, tempUser.password, &tempUser.balance, tempUser.dateOfBirth, tempUser.address, tempUser.email) != EOF)
     {
         if (tempUser.accountNumber == user->accountNumber)
         {
@@ -585,23 +592,23 @@ void header()
 {
     system("cls");
     printf("\n");
-    printf("\t\t\t|| NAM BANK ||\n");
-    printf("\n");
-    printf("\t---------- Bank Management System ----------");
-    // printf("\n====================================================");
-    printf("\n\t___________________________________________________________");
-    printf("\n");
+    printf("\t\t################################################\n");
+    printf("\t\t#                                              #\n");
+    printf("\t\t#        ***  WELCOME TO NKB BANK  ***         #\n");
+    printf("\t\t#                                    Pvt. Ltd. #\n");
+    printf("\t\t################################################\n");
+    printf("\n\t-------------------------------------------------------\n");
 }
 
 // boot graphics
 void boot()
 {
     printf("\n\n\n\n");
-    printf("\t\t\tNNNN    N  AAAAA  M    M      BBBBB    AAAAA  NNNN    N  K   K\n");
-    printf("\t\t\tN   N   N  A   A  MM  MM      B    B   A   A  N   N   N  K  K\n");
-    printf("\t\t\tN    N  N  AAAAA  M MM M      BBBBB    AAAAA  N    N  N  KK\n");
-    printf("\t\t\tN     N N  A   A  M    M      B    B   A   A  N     N N  K  K\n");
-    printf("\t\t\tN      NN  A   A  M    M      BBBBB    A   A  N      NN  K   K\n");
+    printf("\t\t\tNNNN    N  K   K  BBBBB      BBBBB    AAAAA  NNNN    N  K   K\n");
+    printf("\t\t\tN   N   N  K  K   B    B     B    B   A   A  N   N   N  K  K\n");
+    printf("\t\t\tN    N  N  KK     BBBBB      BBBBB    AAAAA  N    N  N  KK\n");
+    printf("\t\t\tN     N N  K  K   B    B     B    B   A   A  N     N N  K  K\n");
+    printf("\t\t\tN      NN  K   K  BBBBB      BBBBB    A   A  N      NN  K   K\n");
     printf("\n\n\t\t\t\t\t\tWELCOMES YOU!\n\n");
     sleep(1);
     printf("\t\t\t");
@@ -609,10 +616,11 @@ void boot()
     for (int i = 0; i < 62; i++)
     {
         printf("_");
-        sleep(0.1);
+        sleep(0.4);
     }
-    sleep(0.1);
+    sleep(1);
 }
+
 int isValidPassword(char *password)
 {
     int length = 0, hasUpper = 0, hasLower = 0, hasDigit = 0, hasSpecial = 0;
@@ -724,8 +732,20 @@ void lowercase(char str[])
 // not completed.........................
 void viewinfo(struct User *user)
 {
+    system("cls");
     header();
-    printf("Hello");
+    printf("\t\t\t** Personal details ***\n");
+    printf("\tAccount Number: %d\n", user->accountNumber);
+    printf("\tName: %s\n", user->username);
+    printf("\tPhone no.: %s\n", user->phone);
+    printf("\tPassword: %s\n", user->password);
+    printf("\tEmail: %s\n", user->email);
+    printf("\tBalance: NPR %.2f\n", user->balance);
+    printf("\tDOB: %s BS\n", user->dateOfBirth);
+    printf("\tAddress: %s\n", user->address);
+    printf("\tEmail: %s\n\n", user->email);
+    // sleep(3);
+    continueKey();
 }
 void changePassword(struct User *user)
 {
@@ -898,7 +918,7 @@ void changePhoneNumber(struct User *user)
     printf("\tEnter your current PhoneNumber: ");
     scanf("%s", currentPhone);
     Bufferflush();
-    if (strcmp(user->phone,currentPhone) != 0)
+    if (strcmp(user->phone, currentPhone) != 0)
     {
         printf("\tIncorrect PhoneNumber!\n");
         continueKey();
