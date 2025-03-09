@@ -48,9 +48,9 @@ int login(char *username, int *isAdmin, int *isOrganizer);
 void displayAdminMenu();
 void displayOrganizerMenu();
 void displayParticipantMenu();
-void showEvents(int showAll, char *username);
+void showEvents(int showAll, char *username,int isOrganizer);
 void createEvent(char *username);
-void deleteEvent();
+void deleteEvent(char *organizerUsername, int isOrganizer);
 int getNextEventId();
 void saveEventToFile(Event event);
 // void loadEventsFromFile(Event *events, int *eventCount, int status); // status = 0 for user, 1 for organizer and 2 for admin
@@ -66,8 +66,8 @@ int main(){
     // char username[MAX_USERNAME_LEN];
     char username[MAX_USERNAME_LEN] = "mandip";
     // int isOrganizer = 0;
-    int isOrganizer = 0;
-    int isAdmin = 1;
+    int isOrganizer = 1;
+    int isAdmin = 0;
     int choice;
     int loggedIn = 0;
 
@@ -115,13 +115,13 @@ int main(){
 
                 switch(admChoice){
                     case 1:
-                        showEvents(1,username);
+                        showEvents(1,username,0);
                         break;
                     case 2:
                         createEvent(username);
                         break;
                     case 3:
-                        deleteEvent();
+                        deleteEvent(username,0);
                         break;
                     case 4:
                         printf("Returning to main menu...\n");
@@ -148,18 +148,20 @@ int main(){
 
                 switch(orgChoice){
                     case 1:
-                        showEvents(1,username);
                         // show all events
+                        showEvents(1,username,0);
                         break;
                     case 2:
-                        /// at last
                         // show my events
+                        showEvents(1,username,1);
                         break;
                     case 3:
                         // create my event
+                        createEvent(username);
                         break;
                     case 4:
                         // delete my event
+                        deleteEvent(username,1);
                         break;
                     case 5:
                         // back to main menu
@@ -222,7 +224,7 @@ void displayAdminMenu(){
 }
 
 
-void showEvents(int showAll, char *username){
+void showEvents(int showAll, char *username,int isOrganizer){
     Event events[MAX_EVENTS];
     Registration registrations[MAX_REGISTRATIONS];
     int eventCount = 0, registrationCount = 0;
@@ -243,7 +245,39 @@ void showEvents(int showAll, char *username){
     loadRegistrationsFromFile(registrations, &registrationCount);
 
     clearScreen();
-    
+
+    if(isOrganizer){
+        printf("===== YOUR EVENTS (%s)=====\n\n",username);
+        int newCount = 0;
+
+        for(i = 0; i < eventCount; i++){
+            if(strcmp(events[i].organizerName,username) == 0){
+                newCount++;
+            }
+        }
+        if(newCount == 0){
+            printf("No events available.\n");
+            pauseScreen();
+            return;
+            
+        }else{
+            printf("ID\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
+            printf("------------------------------------------------------------------\n");
+            for(i = 0; i < eventCount; i++){
+                if(strcmp(events[i].organizerName,username) == 0){
+                    printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
+                events[i].id, events[i].name, events[i].location, 
+                events[i].date, events[i].time, 
+                events[i].currentParticipants, events[i].maxParticipants);
+                }
+            }
+        
+        }
+        printf("\n");
+        pauseScreen();
+        return;
+    }
+
     if (showAll) {
         printf("===== ALL EVENTS =====\n\n");
     } else {
@@ -310,7 +344,7 @@ void createEvent(char *organizerUsername){
     fgets(event.description, MAX_EVENT_DESCRIPTION_LEN, stdin);
     event.description[strcspn(event.description, "\n")] = '\0';
     
-    printf("Venue: ");
+    printf("Location: ");
     fgets(event.location, MAX_EVENT_LOCATION_LEN, stdin);
     event.location[strcspn(event.location, "\n")] = '\0';
     
@@ -406,7 +440,7 @@ void loadRegistrationsFromFile(Registration registrations[], int *registrationCo
 }
 
 
-void deleteEvent(){
+void deleteEvent(char *organizerUsername,int isOrganizer){
 
     Event events[MAX_EVENTS];
     Registration registrations[MAX_REGISTRATIONS];
@@ -418,63 +452,137 @@ void deleteEvent(){
     loadRegistrationsFromFile(registrations, &registrationCount);
 
     clearScreen();
-    printf("===== DELETE EVENT =====\n");
 
-    // show all event first
-    if(eventCount == 0){
-        printf("No events available.\n");
-        pauseScreen();
-        return;
-    }
+    if(!isOrganizer){
+        printf("===== DELETE EVENT =====\n");
 
-    printf("Available events: \n");
-    printf("ID\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
-    printf("------------------------------------------------------------------\n");
-    for(i = 0; i < eventCount; i++){
-        printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
-               events[i].id, events[i].name, events[i].location, 
-               events[i].date, events[i].time, 
-               events[i].currentParticipants, events[i].maxParticipants);
-    }
+        // show all event first
+        if(eventCount == 0){
+            printf("No events available.\n");
+            pauseScreen();
+            return;
+        }
 
-    printf("\nEnter event ID to delete(0 for cancel): ");
-    scanf("%d", &eventId);
+        printf("Available events: \n");
+        printf("ID\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
+        printf("------------------------------------------------------------------\n");
+        for(i = 0; i < eventCount; i++){
+            printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
+                events[i].id, events[i].name, events[i].location, 
+                events[i].date, events[i].time, 
+                events[i].currentParticipants, events[i].maxParticipants);
+        }
 
-    if(eventId == 0){
-        printf("Delete operation cancelled.\n");
-        pauseScreen();
-        return;
-    }
+        printf("\nEnter event ID to delete(0 for cancel): ");
+        scanf("%d", &eventId);
 
-    //we have to find event and delete it
-    for (i = 0; i < eventCount; i++) {
-        if (events[i].id == eventId) {
-            // Remove event by shifting array
-            for (j = i; j < eventCount - 1; j++) {
-                events[j] = events[j + 1];
+        if(eventId == 0){
+            printf("Delete operation cancelled.\n");
+            pauseScreen();
+            return;
+        }
+
+        //we have to find event and delete it
+        for (i = 0; i < eventCount; i++) {
+            if (events[i].id == eventId) {
+                // Remove event by shifting array
+                for (j = i; j < eventCount - 1; j++) {
+                    events[j] = events[j + 1];
+                }
+                eventCount--;
+                
+                // Update event file
+                updateEventFile(events, eventCount);
+                
+                // Delete all registrations for this event
+                int newRegistrationCount = 0;
+                for (j = 0; j < registrationCount; j++) {
+                    if (registrations[j].eventId != eventId) {
+                        registrations[newRegistrationCount++] = registrations[j];
+                    }
+                }
+                
+                // Update registration file if any registrations removed
+                if (newRegistrationCount != registrationCount) {
+                    updateRegistrationFile(registrations, newRegistrationCount);
+                }
+                
+                printf("Event deleted successfully\n");
+                found = 1;
+                break;
             }
-            eventCount--;
+        }
+    }else{
+        // printf("===== CHOOSE YOUR EVENT (%s) =====\n", organizerUsername);
+        // showEvents(1,organizerUsername,1);
+        printf("===== YOUR EVENTS (%s)=====\n\n",organizerUsername);
+        int newCount = 0;
+
+        for(i = 0; i < eventCount; i++){
+            if(strcmp(events[i].organizerName,organizerUsername) == 0){
+                newCount++;
+            }
+        }
+        if(newCount == 0){
+            printf("No events available.\n");
+            pauseScreen();
+            return;
             
-            // Update event file
-            updateEventFile(events, eventCount);
-            
-            // Delete all registrations for this event
-            int newRegistrationCount = 0;
-            for (j = 0; j < registrationCount; j++) {
-                if (registrations[j].eventId != eventId) {
-                    registrations[newRegistrationCount++] = registrations[j];
+        }else{
+            printf("ID\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
+            printf("------------------------------------------------------------------\n");
+            for(i = 0; i < eventCount; i++){
+                if(strcmp(events[i].organizerName,organizerUsername) == 0){
+                    printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
+                events[i].id, events[i].name, events[i].location, 
+                events[i].date, events[i].time, 
+                events[i].currentParticipants, events[i].maxParticipants);
                 }
             }
-            
-            // Update registration file if any registrations removed
-            if (newRegistrationCount != registrationCount) {
-                updateRegistrationFile(registrations, newRegistrationCount);
-            }
-            
-            printf("Event deleted successfully\n");
-            found = 1;
-            break;
+        
         }
+        /////
+
+        printf("\nEnter event ID to delete(0 for cancel): ");
+        scanf("%d", &eventId);
+
+        if(eventId == 0){
+            printf("Delete operation cancelled.\n");
+            pauseScreen();
+            return;
+        }
+
+        //we have to find event and delete it
+        for (i = 0; i < eventCount; i++) {
+            if (events[i].id == eventId && (strcmp(events[i].organizerName,organizerUsername) == 0)) {
+                // Remove event by shifting array
+                for (j = i; j < eventCount - 1; j++) {
+                    events[j] = events[j + 1];
+                }
+                eventCount--;
+                
+                // Update event file
+                updateEventFile(events, eventCount);
+                
+                // Delete all registrations for this event
+                int newRegistrationCount = 0;
+                for (j = 0; j < registrationCount; j++) {
+                    if (registrations[j].eventId != eventId) {
+                        registrations[newRegistrationCount++] = registrations[j];
+                    }
+                }
+                
+                // Update registration file if any registrations removed
+                if (newRegistrationCount != registrationCount) {
+                    updateRegistrationFile(registrations, newRegistrationCount);
+                }
+                
+                printf("Event deleted successfully\n");
+                found = 1;
+                break;
+            }
+        }
+
     }
 
     if (!found) {
