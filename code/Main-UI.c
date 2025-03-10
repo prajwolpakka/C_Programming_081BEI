@@ -101,7 +101,7 @@ System_dash:
         goto System_dash;
     }
 
-// Banking menu for logged-in users
+    // Banking menu for logged-in users
 Customer_dash:
     while (1)
     {
@@ -482,20 +482,77 @@ void withdrawMoney(struct User *user)
     // Update user balance in the file
     updateUserBalance(user);
 }
+
 void transferMoney(struct User *user)
 {
     float amount;
-    int accountNumber;
+    int receiverAccNo;
+    FILE *file = fopen("userdetail.txt", "r");
     header();
-    printf("\tEnter the account number to transfer to: ");
-    scanf("%d", &accountNumber);
-    Bufferflush();
-    printf("\tEnter the amount to transfer: ");
-    scanf("%f", &amount);
-    Bufferflush();
-   
-}
+    while (1)
+    {
+        printf("\tEnter the account number to transfer to: ");
+        scanf("%d", &receiverAccNo);
+        Bufferflush();
+        printf("\tEnter the amount to transfer: ");
+        scanf("%f", &amount);
+        Bufferflush();
+        if (amount <= 0)
+        {
+            printf("\tInvalid amount. Please enter a positive value.\n");
+            continueKey();
+            return;
+        }
 
+        if (amount > user->balance)
+        {
+            printf("\tInsufficient balance.\n");
+            continueKey();
+            return;
+        }
+        if (receiverAccNo == user->accountNumber)
+        {
+            printf("Transaction failed! You cannot transfer money to your own account.");
+            continueKey();
+            return;
+        }
+        // Checking whether the receiver account exists
+        struct User receiver;
+        int userFound = 0;
+        while (fscanf(file, "%d %s %s %s %f %s %s %s", &receiver.accountNumber, receiver.username, receiver.phone, receiver.password, &receiver.balance, receiver.dateOfBirth, receiver.address, receiver.email) != EOF)
+        {
+            if (receiver.accountNumber == receiverAccNo)
+            {
+                userFound = 1;
+                break;
+            }
+        }
+        fclose(file);
+
+        if (!userFound)
+        {
+            printf("\tReceiver account does not exist.\n");
+            continueKey();
+            return;
+        }
+
+        // Update balances
+        user->balance -= amount;
+        receiver.balance += amount;
+
+        // Log the transaction
+        logTransaction(user->accountNumber, "TRANSFER", amount, user->balance);
+        logTransaction(receiver.accountNumber, "RECEIVE", amount, receiver.balance);
+
+        // Update user balances in the file
+        updateUserBalance(user);
+        updateUserBalance(&receiver);
+
+        printf("\tTransfer successful! New balance: %.2f\n", user->balance);
+        continueKey();
+        return;
+    }
+}
 
 // Function to display account statement (only for the logged-in user)
 void accountStatement(struct User *user)
@@ -511,7 +568,7 @@ void accountStatement(struct User *user)
     }
 
     printf("\n\tAccount Statement for Account Number: %d\n", user->accountNumber);
-    printf("\t Date       Time     Amount      Activity   Balance\n");
+    printf("\t Date       Time     Amount      Activity   Balance\n\n");
 
     char line[100];
     while (fgets(line, sizeof(line), file))
