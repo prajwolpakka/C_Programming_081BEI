@@ -21,23 +21,24 @@ struct User
 
 // Function prototypes
 void header();
-void boot(); //Boot Graphics
+void boot(); // Boot Graphics
 
 // User-Info Managment
 void viewinfo(struct User *user);
-void changePassword(struct User *user);    // yet to program this code
-void changeEmail(struct User *user);       // yet to program this code
-void changePhoneNumber(struct User *user); // yet to program this code
+void changePassword(struct User *user);
+void changeEmail(struct User *user);
+void changePhoneNumber(struct User *user);
 void createAccount();
 int login(struct User *user);
 
 // Banking Functions
 void depositMoney(struct User *user);
 void withdrawMoney(struct User *user);
+void transferMoney(struct User *user);
 void accountStatement(struct User *user);
 void logTransaction(int accountNumber, const char *type, float amount, float balance);
 void updateUserBalance(struct User *user);
-//Input Validation
+// Input Validation
 int isValidUsername(char *username);
 int isValidPassword(char *password);
 int isValidDateFormat(char *date);
@@ -54,13 +55,13 @@ int main()
     int choice;
     boot();
 
-    System_dash:
+System_dash:
     header();
     // Ask for account creation or login
     printf("\n\t\t\t - - *** NAMASTE *** - - \n\n");
     printf("\t1. Create a Bank Account\n");
     sleep(1);
-    printf("\t2. Already Have An Accont? Login\n");
+    printf("\t2. Already Have An Accont? -> Login\n");
     sleep(1);
     printf("\t3. Exit Bank\n\n");
     sleep(1);
@@ -105,13 +106,14 @@ Customer_dash:
     while (1)
     {
         header();
-        printf("\nWelcome, %s!\t\t\tCurrent Banance::NPR %.2f \n\n", currentUser.username, currentUser.balance);
-        printf("\t1. Deposit Money\n");
-        printf("\t2. Withdraw Money\n");
-        printf("\t3. View Transactions\n");
-        printf("\t4. Setting\n");
-        printf("\t5. Log Out\n");
-        printf("\t6. Exit\n");
+        printf("\nWelcome, %s!\t\t\tCurrent Balance::NPR %.2f \n\n", currentUser.username, currentUser.balance);
+        printf("\t1 --> Deposit\n");
+        printf("\t2 --> Withdraw\n");
+        printf("\t3 --> Transfer \n");
+        printf("\t4 --> Transactions\n");
+        printf("\t5 --> Setting\n");
+        printf("\t6 --> Log Out\n");
+        printf("\t7 --> Exit\n\n");
         printf("\tEnter your choice: ");
         scanf("%d", &choice);
         Bufferflush();
@@ -125,19 +127,22 @@ Customer_dash:
             withdrawMoney(&currentUser);
             break;
         case 3:
-            accountStatement(&currentUser);
+            transferMoney(&currentUser);
             break;
         case 4:
+            accountStatement(&currentUser);
+            break;
+        case 5:
             while (1)
             {
                 header();
 
                 printf(" \n\t\t\t- - - SETTINGS - - - \n\n");
-                printf("\t1.Personal Information \n");
-                printf("\t2. Change Password\n");
-                printf("\t3. Change Email\n");
-                printf("\t4. Change Phone Number\n");
-                printf("\t5. Back\n\n");
+                printf("\t1 --> Personal Information \n");
+                printf("\t2 --> Change Password\n");
+                printf("\t3 --> Change Email\n");
+                printf("\t4 --> Change Phone Number\n");
+                printf("\t5 --> Back\n\n");
                 sleep(1);
                 printf("\tEnter your choice: ");
                 scanf("%d", &choice);
@@ -167,10 +172,10 @@ Customer_dash:
                 }
             }
             break;
-        case 5:
+        case 6:
             goto System_dash;
             break;
-        case 6:
+        case 7:
             printf("\tThank you! Visit us again.\n");
             exit(0);
         default:
@@ -350,9 +355,9 @@ void createAccount()
     newUser.accountNumber = lastAccNo + 1;
     newUser.balance = 0.0;
 
-    printf("\n\t\t Please wait! Your data is being processed..\n");
+    printf("\n\t\t Please wait! Your data is being processed....\n");
     sleep(1);
-    printf("\t\tAlmost there..\n");
+    printf("\t\t Almost there....\n\n");
     sleep(1);
     // Save user details to file
     file = fopen("userdetail.txt", "a"); // opening file in append mode
@@ -477,6 +482,20 @@ void withdrawMoney(struct User *user)
     // Update user balance in the file
     updateUserBalance(user);
 }
+void transferMoney(struct User *user)
+{
+    float amount;
+    int accountNumber;
+    header();
+    printf("\tEnter the account number to transfer to: ");
+    scanf("%d", &accountNumber);
+    Bufferflush();
+    printf("\tEnter the amount to transfer: ");
+    scanf("%f", &amount);
+    Bufferflush();
+   
+}
+
 
 // Function to display account statement (only for the logged-in user)
 void accountStatement(struct User *user)
@@ -582,7 +601,7 @@ void updateUserBalance(struct User *user)
 // Press any key to continue
 void continueKey()
 {
-    printf("\tPress any key to continue.");
+    printf("\n\tPress any key to continue.");
     getch();
 }
 
@@ -737,7 +756,6 @@ void lowercase(char str[])
         str[i] = tolower(str[i]);
     }
 }
-// not completed.........................
 void viewinfo(struct User *user)
 {
     system("cls");
