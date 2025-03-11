@@ -47,6 +47,7 @@ int isValidEmail(char *email);
 void lowercase(char str[]);
 void continueKey();
 void Bufferflush();
+void encryptPassword(char *password);
 
 // Main function
 int main()
@@ -338,9 +339,7 @@ void createAccount()
 
     while (1)
     {
-
-        printf("\tEnter a valid and strong password: ");
-        scanf("%s", newUser.password);
+        encryptPassword(newUser.password);
         if (isValidPassword(newUser.password) != 1)
         {
             printf("\tError! Too weak password. Try again.\n\tNote:Password should be at least 8 character long and should consist of least 1 uppercase, 1 lowercase, 1 digit and 1 special character.\n");
@@ -401,9 +400,7 @@ int login(struct User *user)
     lowercase(username);
     Bufferflush();
 
-    printf("\tEnter your password: ");
-    scanf("%s", password);
-    Bufferflush();
+    encryptPassword(password); // encryption while entering password
     printf("\n\t\tPlease wait....\n");
     sleep(1);
 
@@ -703,6 +700,28 @@ void boot()
         sleep(0.4);
     }
     sleep(1);
+}
+void encryptPassword(char *password)
+{
+    char ch;
+    int i = 0;
+
+    printf("\tEnter valid and strong password: ");
+    while (1)
+    {
+        ch = getch(); // Read character without displaying it
+        if (ch == 13) // Enter key (ASCII 13)
+            break;
+        if (ch == 8 && i > 0)
+        {                    // Handle backspace
+            printf("\b \b"); // Move cursor back, print space, move back again
+            i--;
+            continue;
+        }
+        password[i++] = ch;
+        printf("*"); // Show '*' instead of actual character
+    }
+    password[i] = '\0'; // Null-terminate string
 }
 
 int isValidPassword(char *password)
