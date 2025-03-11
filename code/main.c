@@ -45,6 +45,8 @@ typedef struct {
 
 // function declearation
 int login(char *username, int *isAdmin, int *isOrganizer);
+int signUP(int isOrgzr);
+int signIn(char *username, int *isAdmin, int *isOrganizer, int request); // request 0 for admin , 1 for organizer and 2 for participant
 void displayLoginMenu(int opt);
 void displayAdminMenu();
 void displayOrganizerMenu();
@@ -64,15 +66,15 @@ void clearScreen(); // if you want to clear the screen just call it
 void pauseScreen(); // if you want to hold the screen just call it
 
 int main(){
-    // char username[MAX_USERNAME_LEN];
-    char username[MAX_USERNAME_LEN] = "mandip";
-    // int isOrganizer = 0;
-    int isOrganizer = 1;
+    char username[MAX_USERNAME_LEN];
+    // char username[MAX_USERNAME_LEN] = "mandip";
+    int isOrganizer = 0;
+    // int isOrganizer = 1;
     int isAdmin = 0;
     int choice;
     int loggedIn = 0;
 
-    clearScreen();
+    // clearScreen();
     printf("===== WELCOME TO EVENT MANAGEMENT SYSTEM =====\n\n");
     
     ////////////////////////////////////////////////
@@ -90,11 +92,11 @@ int main(){
     // loggedIn = 1;
 
     while(!loggedIn){
-        printf("Login failed. Try again...\n");
+        printf("\nRe-Login...\n");
         loggedIn = login(username, &isAdmin, &isOrganizer);
     }
 
-    clearScreen();
+    // clearScreen();
     printf("Welcome %s\n", username);
     pauseScreen();
 
@@ -128,6 +130,11 @@ int main(){
                         printf("Returning to main menu...\n");
                         pauseScreen();
                         goto mainMenu;
+                    case 5:
+                        // back home
+                        printf("Logging Out..\n");
+                        // pauseScreen();
+                        goto logOut;
                     default:
                         printf("Invalid choice. Try again...\n");
                         pauseScreen();
@@ -169,6 +176,11 @@ int main(){
                         printf("Returning to main menu...\n");
                         pauseScreen();
                         goto mainMenu;
+                    case 6:
+                        // back home
+                        printf("Logging Out..\n");
+                        // pauseScreen();
+                        goto logOut;
                     default:
                         printf("Invalid choice. Try again...\n");
                         pauseScreen();
@@ -177,12 +189,12 @@ int main(){
             }
 
         } else{
-
             ////////////////////////////////
             /// implement Participant Section here
             ////////////////////////////////
 
             displayParticipantMenu();
+            goto logOut;
             //// instructions
             /*
             participant menu consists
@@ -200,13 +212,21 @@ int main(){
             */
         }
     mainMenu:;
+        continue;
+
+    logOut:
+        break;
     }
 
-    return 0;
+    main();
+
+    // return 0;
 }
+
 int login(char *username, int *isAdmin, int *isOrganizer){
+    int status = 0;
     char password[MAX_PASSWORD_LEN];
-    int loginStatus = 0;
+    // int loginStatus = 0;
     FILE *userFile;
     User user;
 
@@ -239,7 +259,9 @@ int login(char *username, int *isAdmin, int *isOrganizer){
 
     if(opt == 1){
         // admin
-        return signIn(username, isAdmin, isOrganizer,0);
+        status = signIn(username, isAdmin, isOrganizer,0);
+        return status;
+
     }else if(opt == 2){
         // organizer
 
@@ -252,9 +274,15 @@ int login(char *username, int *isAdmin, int *isOrganizer){
         if(choice == 3){
             return 0;
         }else if(choice == 1){
-            return signIn(username, isAdmin, isOrganizer,1);
+            status =  signIn(username, isAdmin, isOrganizer,1);
+            return status;
         }else if(choice == 2){
-            return signUP(1);
+            status =  signUP(1);
+            if(!status){
+                printf("Sign Up Faild. Try again.\n");
+                pauseScreen();
+            }
+            return 0;
         }else{
             return 0; //////////////////////////add here /////////////
         }
@@ -272,12 +300,20 @@ int login(char *username, int *isAdmin, int *isOrganizer){
         if(choice == 3){
             return 0;
         }else if(choice == 1){
-            return signIn(username, isAdmin, isOrganizer,2);
+            status = signIn(username, isAdmin, isOrganizer,2);
+            return status;
         }else if(choice == 2){
-            return signUP(0);
+            status =  signUP(0);
+            if(!status){
+                printf("Sign Up Faild. Try again.\n");
+                pauseScreen();
+            }
+            return 0;
         }else{
             return 0; //////////////////////////add here /////////////
         }
+    }else if(opt == 4){
+        exit(0);
     }else{
         return 0; //////////////////////////add here /////////////
     }
@@ -306,8 +342,8 @@ int signUP(int isOrgzr){
     fwrite(&user, sizeof(User), 1, userFile);
     fclose(userFile);
     
-    printf("User created successfully!\n");
-    pauseScreen();
+    printf("Account created successfully!\n");
+    // pauseScreen();
     return 1;
 }
 
@@ -346,7 +382,7 @@ int signIn(char *username, int *isAdmin, int *isOrganizer, int request){ // requ
     printf("\n");
     
     // Check credentials
-    userFile = fopen("users.dat", "rb");
+    userFile = fopen(".\\files\\users.dat", "rb");
     if (userFile == NULL) {
         printf("Error opening user file!\n");
         return 0;
@@ -373,7 +409,7 @@ int signIn(char *username, int *isAdmin, int *isOrganizer, int request){ // requ
     
     if (!loginStatus) {
         printf("Invalid username or password. Please try again.\n");
-        pauseScreen();
+        // pauseScreen();
     }
     
     return loginStatus;
@@ -401,7 +437,7 @@ void displayOrganizerMenu(){
     printf("3. Create My Event\n");
     printf("4. Delete My Event\n");
     printf("5. Back to Main Menu\n");
-
+    printf("6. Logout\n");
 }
 
 void displayAdminMenu(){
@@ -410,6 +446,7 @@ void displayAdminMenu(){
     printf("2. Create Event\n");
     printf("3. Delete Event\n");
     printf("4. Back to Main Menu\n");
+    printf("5. Logout\n");
 
 }
 
