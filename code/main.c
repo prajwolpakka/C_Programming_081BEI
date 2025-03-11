@@ -45,6 +45,7 @@ typedef struct {
 
 // function declearation
 int login(char *username, int *isAdmin, int *isOrganizer);
+void displayLoginMenu(int opt);
 void displayAdminMenu();
 void displayOrganizerMenu();
 void displayParticipantMenu();
@@ -76,7 +77,7 @@ int main(){
     
     ////////////////////////////////////////////////
     /// implement login here 
-    // loggedIn = login(username, &isAdmin, &isOrganizer); 
+    loggedIn = login(username, &isAdmin, &isOrganizer); 
 
     /*
     -set default username and password for admin
@@ -86,11 +87,11 @@ int main(){
     ////////////////////////////////////////////////
 
     // for testing
-    loggedIn = 1;
+    // loggedIn = 1;
 
     while(!loggedIn){
         printf("Login failed. Try again...\n");
-        // loggedIn = login(username, &isAdmin, &isOrganizer);
+        loggedIn = login(username, &isAdmin, &isOrganizer);
     }
 
     clearScreen();
@@ -203,7 +204,196 @@ int main(){
 
     return 0;
 }
+int login(char *username, int *isAdmin, int *isOrganizer){
+    char password[MAX_PASSWORD_LEN];
+    int loginStatus = 0;
+    FILE *userFile;
+    User user;
 
+    userFile = fopen(".\\files\\users.dat", "rb");
+    if (userFile == NULL) {
+        userFile = fopen(".\\files\\users.dat", "wb");
+        if (userFile == NULL) {
+            printf("Error opening users file!\n");
+            return 0;
+        }
+        
+        // default admin login credentials
+        strcpy(user.username, "mandip");
+        strcpy(user.password, "chhetri");
+        user.isAdmin = 1;
+        fwrite(&user, sizeof(User), 1, userFile);
+        fclose(userFile);
+        
+        printf("Default users created:\n");
+        printf("1. Admin (Organizer): username - mandip, password - chhetri\n");
+        pauseScreen();
+    }else{
+        fclose(userFile);
+    }
+
+    displayLoginMenu(0);
+    int opt;
+    printf("Enter your choice: ");
+    scanf("%d", &opt);
+
+    if(opt == 1){
+        // admin
+        return signIn(username, isAdmin, isOrganizer,0);
+    }else if(opt == 2){
+        // organizer
+
+        displayLoginMenu(1);
+
+        int choice;
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        if(choice == 3){
+            return 0;
+        }else if(choice == 1){
+            return signIn(username, isAdmin, isOrganizer,1);
+        }else if(choice == 2){
+            return signUP(1);
+        }else{
+            return 0; //////////////////////////add here /////////////
+        }
+
+
+    }else if(opt == 3){
+        // participant
+
+        displayLoginMenu(1);
+
+        int choice;
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        if(choice == 3){
+            return 0;
+        }else if(choice == 1){
+            return signIn(username, isAdmin, isOrganizer,2);
+        }else if(choice == 2){
+            return signUP(0);
+        }else{
+            return 0; //////////////////////////add here /////////////
+        }
+    }else{
+        return 0; //////////////////////////add here /////////////
+    }
+
+}
+
+
+
+int signUP(int isOrgzr){
+    FILE *userFile;
+    User user;
+    userFile = fopen(".\\files\\users.dat", "ab");
+    if (userFile == NULL) {
+        printf("Error opening user file!\n");
+        return 0;
+    }
+    
+    printf("===== SIGN UP =====\n");
+    printf("Username: ");
+    scanf("%s", user.username);
+    printf("Password: ");
+    scanf("%s", user.password);
+    user.isAdmin = 0;
+    user.isOrganizer = isOrgzr;
+    
+    fwrite(&user, sizeof(User), 1, userFile);
+    fclose(userFile);
+    
+    printf("User created successfully!\n");
+    pauseScreen();
+    return 1;
+}
+
+
+
+int signIn(char *username, int *isAdmin, int *isOrganizer, int request){ // request 0 for admin , 1 for organizer and 2 for participant
+    char password[MAX_PASSWORD_LEN];
+    int loginStatus = 0;
+    FILE *userFile;
+    User user;
+
+    printf("===== LOGIN =====\n");
+    printf("Username: ");
+    scanf("%s", username);
+    printf("Password: ");
+    
+    // Password masking
+    int i = 0;
+    char ch;
+
+    while (1) {
+        ch = getch();
+        if (ch == 13) { // Enter key
+            password[i] = '\0';
+            break;
+        } else if (ch == 8) { // Backspace
+            if (i > 0) {
+                i--;
+                printf("\b \b");
+            }
+        } else {
+            password[i++] = ch;
+            printf("*");
+        }
+    }
+    printf("\n");
+    
+    // Check credentials
+    userFile = fopen("users.dat", "rb");
+    if (userFile == NULL) {
+        printf("Error opening user file!\n");
+        return 0;
+    }
+    
+    while (fread(&user, sizeof(User), 1, userFile)) {
+        if (strcmp(user.username, username) == 0 && strcmp(user.password, password) == 0) {
+            if(request == 0 && user.isAdmin){
+                loginStatus = 1;
+            }else if(request == 1 && user.isOrganizer){
+                loginStatus = 1;
+            }else if(request == 2 && !user.isAdmin && !user.isOrganizer){
+                loginStatus = 1;
+            }else{
+                loginStatus = 0;
+            }
+            *isOrganizer = user.isOrganizer;
+            *isAdmin = user.isAdmin;
+            break;
+        }
+    }
+
+    fclose(userFile);
+    
+    if (!loginStatus) {
+        printf("Invalid username or password. Please try again.\n");
+        pauseScreen();
+    }
+    
+    return loginStatus;
+
+}
+
+void displayLoginMenu(int opt){
+    if (opt == 0){
+        printf("===== LOGIN MENU =====\n");
+        printf("1. Admin\n");
+        printf("2. Organizer\n");
+        printf("3. Participant\n");
+        printf("4. Exit\n");
+    }else{
+        printf("===== LOGIN MENU =====\n");
+        printf("1. Sign In\n");
+        printf("2. Sign Up\n");
+        printf("3. Exit\n");
+    }
+}
 void displayOrganizerMenu(){
     printf("===== ORGANIZER MENU =====\n");
     printf("1. Show All Events\n");
