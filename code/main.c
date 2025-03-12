@@ -62,6 +62,8 @@ void loadRegistrationsFromFile(Registration *registrations, int *registrationCou
 int isEventRegistered(int eventId, char *username);
 void updateEventFile(Event *events, int eventCount);
 void registerForEvent(char *username);
+int getNextRegistrationId();
+void saveRegistrationToFile(Registration registration);
 int showRegisteredEvents(char *username);
 void cancelRegistration(char *username);
 void updateRegistrationFile(Registration *registrations, int registrationCount);
