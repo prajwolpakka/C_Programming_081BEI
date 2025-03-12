@@ -22,6 +22,7 @@ struct User
 // Function prototypes
 void header();
 void boot(); // Boot Graphics
+void exitAnimation();
 
 // User-Info Managment
 void viewinfo(struct User *user);
@@ -91,7 +92,7 @@ System_dash:
     else if (choice == 3)
     {
         printf("\tThank you! Visit us again.\n");
-        exit(0);
+        exitAnimation();
     }
 
     else
@@ -178,7 +179,7 @@ Customer_dash:
             break;
         case 7:
             printf("\tThank you! Visit us again.\n");
-            exit(0);
+            exitAnimation();
         default:
             printf("\tInvalid choice. Please try again.\n");
             printf("Press any key to continue.");
@@ -680,6 +681,26 @@ void header()
     printf("\t\t################################################\n");
     printf("\n\t-------------------------------------------------------\n");
 }
+// Exit animation
+void exitAnimation()
+{
+    system("cls");
+
+    printf("\n\n\n\n\n\n\n\n");
+  
+    printf("\t\t         THANK YOU FOR USING NKB BANK           \n");
+    printf("\t\t                                                \n");
+    printf("\t\t        Visit Us Again For More Services        \n\n");
+    printf("\t\t        For more information, contact us at     \n");
+    printf("\t\t         +234 813 123 4569                      \n");
+    printf("\t\t         Email: nkb.bank@gmail.com              \n");
+    printf("\t\t         Website: nkbbank.com                   \n\n");
+    printf("\t#######################################################################\n");
+
+    sleep(3);      // Wait before closing
+    exit(0);
+}
+
 
 // boot graphics
 void boot()
