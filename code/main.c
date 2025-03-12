@@ -46,7 +46,7 @@ typedef struct {
 // function declearation
 int login(char *username, int *isAdmin, int *isOrganizer);
 int signUP(int isOrgzr);
-int signIn(char *username, int *isAdmin, int *isOrganizer, int request); // request 0 for admin , 1 for organizer and 2 for participant
+int signIN(char *username, int *isAdmin, int *isOrganizer, int request); // request 0 for admin , 1 for organizer and 2 for participant
 void displayLoginMenu(int opt);
 void displayAdminMenu();
 void displayOrganizerMenu();
@@ -69,6 +69,8 @@ void cancelRegistration(char *username);
 void updateRegistrationFile(Registration *registrations, int registrationCount);
 int safeInput(const char *format, void *input);
 void clearInputBuffer();
+int isValidTime(const char *time);
+int isValidDate(const char *date);
 void clearScreen(); // if you want to clear the screen just call it
 void pauseScreen(); // if you want to hold the screen just call it
 
@@ -81,7 +83,7 @@ int main(){
     int choice;
     int loggedIn = 0;
 
-    // clearScreen();
+    clearScreen();
     printf("===== WELCOME TO EVENT MANAGEMENT SYSTEM =====\n\n");
     
     ////////////////////////////////////////////////
@@ -103,7 +105,7 @@ int main(){
         loggedIn = login(username, &isAdmin, &isOrganizer);
     }
 
-    // clearScreen();
+    clearScreen();
     printf("Welcome %s\n", username);
     pauseScreen();
 
@@ -240,6 +242,8 @@ int main(){
 }
 
 int login(char *username, int *isAdmin, int *isOrganizer){
+    *isAdmin = 0;
+    *isOrganizer = 0;
     int status = 0;
     char password[MAX_PASSWORD_LEN];
     // int loginStatus = 0;
@@ -258,6 +262,7 @@ int login(char *username, int *isAdmin, int *isOrganizer){
         strcpy(user.username, "mandip");
         strcpy(user.password, "chhetri");
         user.isAdmin = 1;
+        user.isOrganizer = 0;
         fwrite(&user, sizeof(User), 1, userFile);
         fclose(userFile);
         
@@ -269,19 +274,28 @@ int login(char *username, int *isAdmin, int *isOrganizer){
     }
 
 
-
+    
     displayLoginMenu(0);
+    // this is for debugging
+    // printf("this is login %d %d",*isAdmin,*isOrganizer);
     int opt;
     printf("Enter your choice: ");
     safeInput("%d", &opt);
 
     if(opt == 1){
         // admin
-        status = signIn(username, isAdmin, isOrganizer,0);
+        *isAdmin = 1;
+        status = signIN(username, isAdmin, isOrganizer,0);
+
+        if(!status){
+            *isAdmin = 0;
+        }
         return status;
 
     }else if(opt == 2){
         // organizer
+        *isOrganizer = 1;
+        *isAdmin = 0;
         while(1){
             displayLoginMenu(1);
 
@@ -292,7 +306,7 @@ int login(char *username, int *isAdmin, int *isOrganizer){
             if(choice == 3){
                 return 0;
             }else if(choice == 1){
-                status =  signIn(username, isAdmin, isOrganizer,1);
+                status =  signIN(username, isAdmin, isOrganizer,1);
                 return status;
             }else if(choice == 2){
                 status =  signUP(1);
@@ -302,13 +316,15 @@ int login(char *username, int *isAdmin, int *isOrganizer){
                 }
                 return 0;
             }else{
-                // return 0; //////////////////////////add here /////////////
+                // return 0; //////////////////////////add here ////////////
                 printf("Invalid Choice.\n");
             }
          }
 
     }else if(opt == 3){
         // participant
+        *isOrganizer = 0;
+        *isAdmin = 0;
         while(1){
             displayLoginMenu(1);
 
@@ -319,7 +335,7 @@ int login(char *username, int *isAdmin, int *isOrganizer){
             if(choice == 3){
                 return 0;
             }else if(choice == 1){
-                status = signIn(username, isAdmin, isOrganizer,2);
+                status = signIN(username, isAdmin, isOrganizer,2);
                 return status;
             }else if(choice == 2){
                 status =  signUP(0);
@@ -350,8 +366,12 @@ int signUP(int isOrgzr){
         printf("Error opening user file!\n");
         return 0;
     }
-    
-    printf("===== SIGN UP =====\n");
+    clearScreen();
+    if(isOrgzr){
+        printf("===== ORGANIZER SIGN UP =====\n");
+    }else{
+        printf("===== PARTICIPANT SIGN UP =====\n");
+    }
     printf("Username: ");
     safeInput("%s", user.username);
     printf("Password: ");
@@ -363,19 +383,31 @@ int signUP(int isOrgzr){
     fclose(userFile);
     
     printf("Account created successfully!\n");
-    // pauseScreen();
+    pauseScreen();
     return 1;
 }
 
 
 
-int signIn(char *username, int *isAdmin, int *isOrganizer, int request){ // request 0 for admin , 1 for organizer and 2 for participant
+int signIN(char *username, int *isAdmin, int *isOrganizer, int request){ // request 0 for admin , 1 for organizer and 2 for participant
     char password[MAX_PASSWORD_LEN];
     int loginStatus = 0;
     FILE *userFile;
     User user;
 
-    printf("===== LOGIN =====\n");
+    clearScreen(); // clear the screen
+    if(request == 0){
+        printf("===== LOGIN AS A ADMIN=====\n");
+        *isAdmin = 1;
+    }else if(request == 1){
+        printf("===== LOGIN AS A ORGANIZER=====\n");
+        *isOrganizer = 1;
+    }else if(request == 2){
+        printf("===== LOGIN AS A PARTICIPANT=====\n");
+    }else{
+        printf("===== LOGIN =====\n");
+    }
+
     printf("Username: ");
     safeInput("%s", username);
     printf("Password: ");
@@ -405,38 +437,48 @@ int signIn(char *username, int *isAdmin, int *isOrganizer, int request){ // requ
     userFile = fopen(".\\files\\users.dat", "rb");
     if (userFile == NULL) {
         printf("Error opening user file!\n");
+        pauseScreen();
         return 0;
     }
     
     while (fread(&user, sizeof(User), 1, userFile)) {
         if (strcmp(user.username, username) == 0 && strcmp(user.password, password) == 0) {
-            if(request == 0 && user.isAdmin){
+            // this is done for debugging
+            // printf("Login successful!\n\n");
+            // printf("%d %d %d\n",request,user.isAdmin,user.isOrganizer);
+            // pauseScreen();
+
+            if(request == 0 && user.isAdmin && !user.isOrganizer){
                 loginStatus = 1;
-            }else if(request == 1 && user.isOrganizer){
+            }else if(request == 1 && user.isOrganizer && !user.isAdmin){
                 loginStatus = 1;
             }else if(request == 2 && !user.isAdmin && !user.isOrganizer){
                 loginStatus = 1;
             }else{
                 loginStatus = 0;
             }
-            *isOrganizer = user.isOrganizer;
-            *isAdmin = user.isAdmin;
-            break;
+            if(loginStatus){
+                *isOrganizer = user.isOrganizer;
+                *isAdmin = user.isAdmin;
+                break;
+            }
         }
     }
 
     fclose(userFile);
     
     if (!loginStatus) {
+        clearScreen();
         printf("Invalid username or password. Please try again.\n");
-        // pauseScreen();
+        pauseScreen();
     }
     
     return loginStatus;
 
 }
-
+////////////////////////////////UI
 void displayLoginMenu(int opt){
+    clearScreen();
     if (opt == 0){
         printf("===== LOGIN MENU =====\n");
         printf("1. Admin\n");
@@ -470,7 +512,17 @@ void displayAdminMenu(){
 
 }
 
+void displayParticipantMenu(){
+    printf("===== PARTICIPANT MENU =====\n");
+    printf("1. Show Available Events\n");
+    printf("2. Register for Event\n");
+    printf("3. Show Registered Events\n");
+    printf("4. Cancel Registration\n");
+    // printf("5. Back to Main Menu\n");
+    printf("5. LogOut\n");
+}
 
+/////////////UI///////////////
 void showEvents(int showAll, char *username,int isOrganizer){
     Event events[MAX_EVENTS];
     Registration registrations[MAX_REGISTRATIONS];
@@ -508,14 +560,14 @@ void showEvents(int showAll, char *username,int isOrganizer){
             return;
             
         }else{
-            printf("ID\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
-            printf("------------------------------------------------------------------\n");
+            printf("ID\tName           \tLocation       \tDate\t\tTime\tRegistered/Max\n");
+            printf("------------------------------------------------------------------------------\n");
             for(i = 0; i < eventCount; i++){
                 if(strcmp(events[i].organizerName,username) == 0){
                     printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
-                events[i].id, events[i].name, events[i].location, 
-                events[i].date, events[i].time, 
-                events[i].currentParticipants, events[i].maxParticipants);
+                        events[i].id, events[i].name, events[i].location, 
+                        events[i].date, events[i].time, 
+                        events[i].currentParticipants, events[i].maxParticipants);
                 }
             }
         
@@ -535,11 +587,12 @@ void showEvents(int showAll, char *username,int isOrganizer){
         printf("No events available.\n");
     } else {
         if(showAll){
-            printf("Organizer\tID\t\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
+            printf("Organizer\tID\tName           \tLocation       \tDate\t\tTime\tRegistered/Max\n");
+            printf("----------------");
         } else{
-            printf("ID\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
+            printf("ID\tName           \tLocation       \tDate\t\tTime\tRegistered/Max\n");
         }
-        printf("------------------------------------------------------------------\n");
+        printf("------------------------------------------------------------------------------\n");
         
         for (i = 0; i < eventCount; i++) {
             // If not showing all events, check if user has registered for this event
@@ -555,9 +608,9 @@ void showEvents(int showAll, char *username,int isOrganizer){
                     hasRegistrations = 1;
                 } else {
                     printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
-                           events[i].id, events[i].name, events[i].location, 
-                           events[i].date, events[i].time, 
-                           events[i].currentParticipants, events[i].maxParticipants);
+                        events[i].id, events[i].name, events[i].location, 
+                        events[i].date, events[i].time, 
+                        events[i].currentParticipants, events[i].maxParticipants);
                 }
             } else {
                 printf("%-15s\t%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
@@ -583,7 +636,8 @@ void createEvent(char *organizerUsername){
 
     // Input event details
     printf("Event Name: ");
-    getchar(); // Clear input buffer
+    // getchar(); // Clear input buffer
+    // clearInputBuffer();
     fgets(event.name, MAX_EVENT_NAME_LEN, stdin);
     event.name[strcspn(event.name, "\n")] = '\0'; // Remove newline
     
@@ -715,8 +769,8 @@ void deleteEvent(char *organizerUsername,int isOrganizer){
         }
 
         printf("Available events: \n");
-        printf("ID\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
-        printf("------------------------------------------------------------------\n");
+        printf("ID\tName           \tLocation       \tDate\t\tTime\tRegistered/Max\n");
+        printf("------------------------------------------------------------------------------\n");
         for(i = 0; i < eventCount; i++){
             printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
                 events[i].id, events[i].name, events[i].location, 
@@ -780,8 +834,9 @@ void deleteEvent(char *organizerUsername,int isOrganizer){
             return;
             
         }else{
-            printf("ID\tName\t\tLocation\t\tDate\t\tTime\tRegistered/Max\n");
-            printf("------------------------------------------------------------------\n");
+            printf("ID\tName           \tLocation       \tDate\t\tTime\tRegistered/Max\n");
+            // printf("------------------------------------------------------------------------------\n");
+            printf("------------------------------------------------------------------------------\n");
             for(i = 0; i < eventCount; i++){
                 if(strcmp(events[i].organizerName,organizerUsername) == 0){
                     printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
@@ -905,15 +960,6 @@ int isEventRegistered(int eventId, char *username) {
 
 
 
-void displayParticipantMenu(){
-    printf("===== PARTICIPANT MENU =====\n");
-    printf("1. Show Available Events\n");
-    printf("2. Register for Event\n");
-    printf("3. Show Registered Events\n");
-    printf("4. Cancel Registration\n");
-    // printf("5. Back to Main Menu\n");
-    printf("5. LogOut\n");
-}
 int showRegisteredEvents(char *username){
     Event events[MAX_EVENTS];
     Registration registrations[MAX_REGISTRATIONS];
@@ -928,7 +974,7 @@ int showRegisteredEvents(char *username){
 
     // Show registered events
     printf("Your Registered Events:\n");
-    printf("ID\tName\t\tlocation\t\tDate\t\tTime\n");
+    printf("ID\tName           \tLocation       \tDate\t\tTime\n");
     printf("--------------------------------------------------\n");
     
     for (i = 0; i < eventCount; i++) {
@@ -971,8 +1017,8 @@ void registerForEvent(char *username) {
     }
     
     printf("Available/Vacant Events:\n");
-    printf("ID\tName\t\tlocation\t\tDate\t\tTime\tRegistered/Max\n");
-    printf("------------------------------------------------------------------\n");
+    printf("ID\tName           \tLocation       \tDate\t\tTime\tRegistered/Max\n");
+    printf("------------------------------------------------------------------------------\n");
     
     for (i = 0; i < eventCount; i++) {
        int registered = isEventRegistered(events[i].id, username);
