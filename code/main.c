@@ -67,6 +67,8 @@ void saveRegistrationToFile(Registration registration);
 int showRegisteredEvents(char *username);
 void cancelRegistration(char *username);
 void updateRegistrationFile(Registration *registrations, int registrationCount);
+int safeInput(const char *format, void *input);
+void clearInputBuffer();
 void clearScreen(); // if you want to clear the screen just call it
 void pauseScreen(); // if you want to hold the screen just call it
 
@@ -119,7 +121,7 @@ int main(){
                 clearScreen();
                 displayAdminMenu();
                 printf("Enter your choice: ");
-                scanf("%d", &admChoice);
+                safeInput("%d", &admChoice);
 
                 switch(admChoice){
                     case 1:
@@ -131,10 +133,6 @@ int main(){
                     case 3:
                         deleteEvent(username,0);
                         break;
-                    // case 4:
-                    //     printf("Returning to main menu...\n");
-                    //     pauseScreen();
-                    //     goto mainMenu;
                     case 4:
                         // back home
                         printf("Logging Out..\n");
@@ -157,7 +155,7 @@ int main(){
                 clearScreen();
                 displayOrganizerMenu();
                 printf("Enter your choice: ");
-                scanf("%d", &orgChoice);
+                safeInput("%d", &orgChoice);
 
                 switch(orgChoice){
                     case 1:
@@ -176,11 +174,6 @@ int main(){
                         // delete my event
                         deleteEvent(username,1);
                         break;
-                    // case 5:
-                    //     // back to main menu
-                    //     printf("Returning to main menu...\n");
-                    //     pauseScreen();
-                    //     goto mainMenu;
                     case 5:
                         // back home
                         printf("Logging Out..\n");
@@ -202,7 +195,7 @@ int main(){
                 clearScreen();
                 displayParticipantMenu();
                 printf("Enter your choice: ");
-                scanf("%d", &partChoice);
+                safeInput("%d", &partChoice);
 
                 switch(partChoice){
                     case 1:
@@ -222,11 +215,6 @@ int main(){
                         // cancel my registration
                         cancelRegistration(username);
                         break;
-                    // case 5:
-                    //     // back to main menu
-                    //     printf("Returning to main menu...\n");
-                    //     pauseScreen();
-                    //     goto mainMenu;
                     case 5:
                         // back home
                         printf("Logging Out..\n");
@@ -238,24 +226,6 @@ int main(){
                 }
 
             }
-            // displayParticipantMenu();
-            // goto logOut;
-
-            //// instructions
-            /*
-            participant menu consists
-            1. show all events
-              - load events from the file  and show
-            2. show available events
-              - load events from the file and show only those events which are not full
-            3. register for an event
-              - ask for event id and register it  if it is vacent
-            4. show my regestered events
-                - load registrations from the file and show only those events which are registered by the user
-            5. cancel registration
-                - ask for event id and cancel the registration
-            6. back to main menu
-            */
         }
     mainMenu:;
         continue;
@@ -298,10 +268,12 @@ int login(char *username, int *isAdmin, int *isOrganizer){
         fclose(userFile);
     }
 
+
+
     displayLoginMenu(0);
     int opt;
     printf("Enter your choice: ");
-    scanf("%d", &opt);
+    safeInput("%d", &opt);
 
     if(opt == 1){
         // admin
@@ -310,60 +282,62 @@ int login(char *username, int *isAdmin, int *isOrganizer){
 
     }else if(opt == 2){
         // organizer
+        while(1){
+            displayLoginMenu(1);
 
-        displayLoginMenu(1);
+            int choice;
+            printf("Enter your choice: ");
+            safeInput("%d", &choice);
 
-        int choice;
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        if(choice == 3){
-            return 0;
-        }else if(choice == 1){
-            status =  signIn(username, isAdmin, isOrganizer,1);
-            return status;
-        }else if(choice == 2){
-            status =  signUP(1);
-            if(!status){
-                printf("Sign Up Faild. Try again.\n");
-                pauseScreen();
+            if(choice == 3){
+                return 0;
+            }else if(choice == 1){
+                status =  signIn(username, isAdmin, isOrganizer,1);
+                return status;
+            }else if(choice == 2){
+                status =  signUP(1);
+                if(!status){
+                    printf("Sign Up Faild. Try again.\n");
+                    pauseScreen();
+                }
+                return 0;
+            }else{
+                // return 0; //////////////////////////add here /////////////
+                printf("Invalid Choice.\n");
             }
-            return 0;
-        }else{
-            return 0; //////////////////////////add here /////////////
-        }
-
+         }
 
     }else if(opt == 3){
         // participant
+        while(1){
+            displayLoginMenu(1);
 
-        displayLoginMenu(1);
+            int choice;
+            printf("Enter your choice: ");
+            safeInput("%d", &choice);
 
-        int choice;
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        if(choice == 3){
-            return 0;
-        }else if(choice == 1){
-            status = signIn(username, isAdmin, isOrganizer,2);
-            return status;
-        }else if(choice == 2){
-            status =  signUP(0);
-            if(!status){
-                printf("Sign Up Faild. Try again.\n");
-                pauseScreen();
+            if(choice == 3){
+                return 0;
+            }else if(choice == 1){
+                status = signIn(username, isAdmin, isOrganizer,2);
+                return status;
+            }else if(choice == 2){
+                status =  signUP(0);
+                if(!status){
+                    printf("Sign Up Faild. Try again.\n");
+                    pauseScreen();
+                }
+                return 0;
+            }else{
+                printf("Invalid Choice.\n");
             }
-            return 0;
-        }else{
-            return 0; //////////////////////////add here /////////////
         }
     }else if(opt == 4){
         exit(0);
     }else{
-        return 0; //////////////////////////add here /////////////
+        printf("Invalid Choice..");
+        return 0;
     }
-
 }
 
 
@@ -379,9 +353,9 @@ int signUP(int isOrgzr){
     
     printf("===== SIGN UP =====\n");
     printf("Username: ");
-    scanf("%s", user.username);
+    safeInput("%s", user.username);
     printf("Password: ");
-    scanf("%s", user.password);
+    safeInput("%s", user.password);
     user.isAdmin = 0;
     user.isOrganizer = isOrgzr;
     
@@ -403,7 +377,7 @@ int signIn(char *username, int *isAdmin, int *isOrganizer, int request){ // requ
 
     printf("===== LOGIN =====\n");
     printf("Username: ");
-    scanf("%s", username);
+    safeInput("%s", username);
     printf("Password: ");
     
     // Password masking
@@ -621,14 +595,18 @@ void createEvent(char *organizerUsername){
     fgets(event.location, MAX_EVENT_LOCATION_LEN, stdin);
     event.location[strcspn(event.location, "\n")] = '\0';
     
-    printf("Date (DD/MM/YYYY): ");
-    scanf("%s", event.date);
-    
-    printf("Time (HH:MM): ");
-    scanf("%s", event.time);
+    do{
+        printf("Date (DD/MM/YYYY): ");
+        safeInput("%s", event.date);
+    } while (!isValidDate(event.date));
+
+    do{
+        printf("Time (HH:MM): ");
+        safeInput("%s", event.time);
+    }while(!isValidTime(event.time));
     
     printf("Maximum Participants: ");
-    scanf("%d", &event.maxParticipants);
+    safeInput("%d", &event.maxParticipants);
     
     event.currentParticipants = 0;
     
@@ -747,7 +725,7 @@ void deleteEvent(char *organizerUsername,int isOrganizer){
         }
 
         printf("\nEnter event ID to delete(0 for cancel): ");
-        scanf("%d", &eventId);
+        safeInput("%d", &eventId);
 
         if(eventId == 0){
             printf("Delete operation cancelled.\n");
@@ -817,7 +795,7 @@ void deleteEvent(char *organizerUsername,int isOrganizer){
         /////
 
         printf("\nEnter event ID to delete(0 for cancel): ");
-        scanf("%d", &eventId);
+        safeInput("%d", &eventId);
 
         if(eventId == 0){
             printf("Delete operation cancelled.\n");
@@ -1014,7 +992,7 @@ void registerForEvent(char *username) {
             }
     
     printf("\nEnter Event ID to register (0 to cancel): ");
-    scanf("%d", &eventId);
+    safeInput("%d", &eventId);
     
     if (eventId == 0) {
         printf("Registration cancelled.\n");
@@ -1085,7 +1063,7 @@ void cancelRegistration(char *username) {
     }
 
     printf("\nEnter Event ID to cancel registration (0 to cancel): ");
-    scanf("%d", &eventId);
+    safeInput("%d", &eventId);
     
     if (eventId == 0) {
         printf("Cancellation aborted.\n");
@@ -1161,6 +1139,51 @@ void saveRegistrationToFile(Registration registration){
 
     fwrite(&registration, sizeof(Registration), 1, regFile);
     fclose(regFile);
+}
+
+/// Error Handling
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+int safeInput(const char *format, void *input) {
+    int result;
+    do {
+        // printf("Enter your input: ");  // Ask the same question again
+        result = scanf(format, input);
+        clearInputBuffer();
+        if (result != 1) {
+            printf("Invalid input.\n");
+            printf("Please enter a valid input : ");
+        }
+    } while (result != 1);
+    
+    return result;
+}
+
+int isValidDate(const char *date) {
+    int dd, mm, yyyy;
+    if (sscanf(date, "%d/%d/%d", &dd, &mm, &yyyy) != 3)
+        return 0;
+
+    // Check valid range
+    if (dd < 1 || dd > 31 || mm < 1 || mm > 12 || yyyy < 1000 || yyyy > 9999)
+        return 0;
+
+    return 1;
+}
+
+int isValidTime(const char *time) {
+    int hh, mm;
+    if (sscanf(time, "%d:%d", &hh, &mm) != 2)
+        return 0;
+
+    // Check valid range
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59)
+        return 0;
+
+    return 1;
 }
 
 void clearScreen() {
