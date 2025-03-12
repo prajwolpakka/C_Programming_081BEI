@@ -61,6 +61,9 @@ void loadEventsFromFile(Event *events, int *eventCount); // without status
 void loadRegistrationsFromFile(Registration *registrations, int *registrationCount);
 int isEventRegistered(int eventId, char *username);
 void updateEventFile(Event *events, int eventCount);
+void registerForEvent(char *username);
+void showRegisteredEvents(char *username);
+void cancelRegistration(char *username);
 void updateRegistrationFile(Registration *registrations, int registrationCount);
 void clearScreen(); // if you want to clear the screen just call it
 void pauseScreen(); // if you want to hold the screen just call it
@@ -192,9 +195,50 @@ int main(){
             ////////////////////////////////
             /// implement Participant Section here
             ////////////////////////////////
+            int partChoice;
+            while(1){
+                clearScreen();
+                displayParticipantMenu();
+                printf("Enter your choice: ");
+                scanf("%d", &partChoice);
 
-            displayParticipantMenu();
-            goto logOut;
+                switch(partChoice){
+                    case 1:
+                        // show Available events
+                        showEvents(0,username,0);
+                        break;
+                    case 2:
+                        // Register for event
+                        registerForEvent(username);
+                        break;
+                    case 3:
+                        // Show Registered Event
+                        showRegisteredEvents(username);
+                        pauseScreen();
+                        break;
+                    case 4:
+                        // cancel my registration
+                        cancelRegistration(username);
+                        break;
+                    case 5:
+                        // back to main menu
+                        printf("Returning to main menu...\n");
+                        pauseScreen();
+                        goto mainMenu;
+                    case 6:
+                        // back home
+                        printf("Logging Out..\n");
+                        // pauseScreen();
+                        goto logOut;
+                    default:
+                        printf("Invalid choice. Try again...\n");
+                        pauseScreen();
+                }
+
+            }
+            // displayParticipantMenu();
+            // goto logOut;
+
             //// instructions
             /*
             participant menu consists
@@ -883,6 +927,223 @@ int isEventRegistered(int eventId, char *username) {
 
 void displayParticipantMenu(){
     printf("===== PARTICIPANT MENU =====\n");
+    printf("1. Show Available Events\n");
+    printf("2. Register for Event\n");
+    printf("3. Show Registered Events\n");
+    printf("4. Cancel Registration\n");
+    printf("5. Back to Main Menu\n");
+    printf("6. LogOut\n");
+}
+void showRegisteredEvents(char *username){
+    Event events[MAX_EVENTS];
+    Registration registrations[MAX_REGISTRATIONS];
+    int eventCount = 0, registrationCount = 0;
+    int i, j, registeredEventCount = 0;
+    
+    // Load events and registrations
+    loadEventsFromFile(events, &eventCount);
+    loadRegistrationsFromFile(registrations, &registrationCount);
+    
+    clearScreen();
+
+    // Show registered events
+    printf("Your Registered Events:\n");
+    printf("ID\tName\t\tlocation\t\tDate\t\tTime\n");
+    printf("--------------------------------------------------\n");
+    
+    for (i = 0; i < eventCount; i++) {
+        for (j = 0; j < registrationCount; j++) {
+            if (registrations[j].eventId == events[i].id && 
+                strcmp(registrations[j].username, username) == 0) {
+                printf("%d\t%-15s\t%-15s\t%s\t%s\n", 
+                       events[i].id, events[i].name, events[i].location, 
+                       events[i].date, events[i].time);
+                registeredEventCount++;
+                break;
+            }
+        }
+    }
+    
+    if (registeredEventCount == 0) {
+        printf("You are not registered for any events.\n");
+        pauseScreen();
+        return;
+    }
+}
+
+void registerForEvent(char *username) {
+    Event events[MAX_EVENTS];
+    Registration registration, registrations[MAX_REGISTRATIONS];
+    int eventCount = 0, registrationCount = 0;
+    int eventId, i, found = 0;
+    
+    // Load events and registrations
+    loadEventsFromFile(events, &eventCount);
+    loadRegistrationsFromFile(registrations, &registrationCount);
+    
+    clearScreen();
+    printf("===== REGISTER FOR EVENT =====\n\n");
+
+    if (eventCount == 0) {
+        printf("No events available for registration.\n");
+        pauseScreen();
+        return;
+    }
+    
+    printf("Available Events:\n");
+    printf("ID\tName\t\tlocation\t\tDate\t\tTime\tRegistered/Max\n");
+    printf("------------------------------------------------------------------\n");
+    
+    for (i = 0; i < eventCount; i++) {
+        printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
+               events[i].id, events[i].name, events[i].location, 
+               events[i].date, events[i].time, 
+               events[i].currentParticipants, events[i].maxParticipants);
+    }
+    
+    printf("\nEnter Event ID to register (0 to cancel): ");
+    scanf("%d", &eventId);
+    
+    if (eventId == 0) {
+        printf("Registration cancelled.\n");
+        pauseScreen();
+        return;
+    }
+    
+    // Check if event exists and has space
+    for (i = 0; i < eventCount; i++) {
+        if (events[i].id == eventId) {
+            found = 1;
+            
+            // already registered or not
+            if (isEventRegistered(eventId, username)) {
+                printf("You are already registered for this event.\n");
+                pauseScreen();
+                return;
+            }
+            
+            // event is full or not
+            if (events[i].currentParticipants >= events[i].maxParticipants) {
+                printf("This event is already full.\n");
+                pauseScreen();
+                return;
+            }
+            
+            // Register process
+            registration.id = getNextRegistrationId();
+            strcpy(registration.username, username);
+            registration.eventId = eventId;
+            
+            saveRegistrationToFile(registration);
+            
+            // Update event participant count
+            events[i].currentParticipants++;
+            updateEventFile(events, eventCount);
+            
+            printf("You have successfully registered for %s.\n", events[i].name);
+            pauseScreen();
+            return;
+        }
+    }
+    
+    if (!found) {
+        printf("Event with ID %d not found.\n", eventId);
+        pauseScreen();
+    }
+}
+
+void cancelRegistration(char *username) {
+    Event events[MAX_EVENTS];
+    Registration registrations[MAX_REGISTRATIONS];
+    int eventCount = 0, registrationCount = 0;
+    int eventId, i, j, found = 0, registeredEventCount = 0;
+    
+    // Load events and registrations
+    loadEventsFromFile(events, &eventCount);
+    loadRegistrationsFromFile(registrations, &registrationCount);
+    
+    clearScreen();
+    printf("===== CANCEL REGISTRATION =====\n\n");
+    
+    showRegisteredEvents(username);
+    
+    printf("\nEnter Event ID to cancel registration (0 to cancel): ");
+    scanf("%d", &eventId);
+    
+    if (eventId == 0) {
+        printf("Cancellation aborted.\n");
+        pauseScreen();
+        return;
+    }
+    
+    // Find and remove registration
+    for (i = 0; i < registrationCount; i++) {
+        if (registrations[i].eventId == eventId && 
+            strcmp(registrations[i].username, username) == 0) {
+            
+            // Remove registration by shifting array
+            for (j = i; j < registrationCount - 1; j++) {
+                registrations[j] = registrations[j + 1];
+            }
+            registrationCount--;
+            
+            // Update registration file
+            updateRegistrationFile(registrations, registrationCount);
+            
+            // Update event participant count
+            for (j = 0; j < eventCount; j++) {
+                if (events[j].id == eventId) {
+                    events[j].currentParticipants--;
+                    updateEventFile(events, eventCount);
+                    break;
+                }
+            }
+            
+            printf("Registration cancelled successfully.\n");
+            found = 1;
+            break;
+        }
+    }
+    
+    if (!found) {
+        printf("You are not registered for event with ID %d.\n", eventId);
+    }
+    
+    pauseScreen();
+}
+
+int getNextRegistrationId(){
+    Registration registration;
+    int maxId = 0;
+
+    FILE *regFile;
+
+    regFile = fopen(".\\files\\registrations.dat", "rb");
+    if (regFile == NULL) {
+        return 1;
+    }
+
+    while (fread(&registration, sizeof(Registration), 1, regFile)) {
+        if (registration.id > maxId) {
+            maxId = registration.id;
+        }
+    }
+
+    fclose(regFile);
+    return maxId + 1;
+}
+
+void saveRegistrationToFile(Registration registration){
+    FILE *regFile;
+
+    regFile = fopen(".\\files\\registrations.dat", "ab");
+    if (regFile == NULL) {
+        printf("Error saving registration to file\n");
+        return;
+    }
+
+    fwrite(&registration, sizeof(Registration), 1, regFile);
+    fclose(regFile);
 }
 
 void clearScreen() {
