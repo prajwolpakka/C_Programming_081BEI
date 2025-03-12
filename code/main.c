@@ -62,7 +62,7 @@ void loadRegistrationsFromFile(Registration *registrations, int *registrationCou
 int isEventRegistered(int eventId, char *username);
 void updateEventFile(Event *events, int eventCount);
 void registerForEvent(char *username);
-void showRegisteredEvents(char *username);
+int showRegisteredEvents(char *username);
 void cancelRegistration(char *username);
 void updateRegistrationFile(Registration *registrations, int registrationCount);
 void clearScreen(); // if you want to clear the screen just call it
@@ -129,11 +129,11 @@ int main(){
                     case 3:
                         deleteEvent(username,0);
                         break;
+                    // case 4:
+                    //     printf("Returning to main menu...\n");
+                    //     pauseScreen();
+                    //     goto mainMenu;
                     case 4:
-                        printf("Returning to main menu...\n");
-                        pauseScreen();
-                        goto mainMenu;
-                    case 5:
                         // back home
                         printf("Logging Out..\n");
                         // pauseScreen();
@@ -174,12 +174,12 @@ int main(){
                         // delete my event
                         deleteEvent(username,1);
                         break;
+                    // case 5:
+                    //     // back to main menu
+                    //     printf("Returning to main menu...\n");
+                    //     pauseScreen();
+                    //     goto mainMenu;
                     case 5:
-                        // back to main menu
-                        printf("Returning to main menu...\n");
-                        pauseScreen();
-                        goto mainMenu;
-                    case 6:
                         // back home
                         printf("Logging Out..\n");
                         // pauseScreen();
@@ -220,12 +220,12 @@ int main(){
                         // cancel my registration
                         cancelRegistration(username);
                         break;
+                    // case 5:
+                    //     // back to main menu
+                    //     printf("Returning to main menu...\n");
+                    //     pauseScreen();
+                    //     goto mainMenu;
                     case 5:
-                        // back to main menu
-                        printf("Returning to main menu...\n");
-                        pauseScreen();
-                        goto mainMenu;
-                    case 6:
                         // back home
                         printf("Logging Out..\n");
                         // pauseScreen();
@@ -480,8 +480,8 @@ void displayOrganizerMenu(){
     printf("2. Show My Events\n");
     printf("3. Create My Event\n");
     printf("4. Delete My Event\n");
-    printf("5. Back to Main Menu\n");
-    printf("6. Logout\n");
+    // printf("5. Back to Main Menu\n");
+    printf("5. Logout\n");
 }
 
 void displayAdminMenu(){
@@ -489,8 +489,8 @@ void displayAdminMenu(){
     printf("1. Show All Events\n");
     printf("2. Create Event\n");
     printf("3. Delete Event\n");
-    printf("4. Back to Main Menu\n");
-    printf("5. Logout\n");
+    // printf("4. Back to Main Menu\n");
+    printf("4. Logout\n");
 
 }
 
@@ -931,10 +931,10 @@ void displayParticipantMenu(){
     printf("2. Register for Event\n");
     printf("3. Show Registered Events\n");
     printf("4. Cancel Registration\n");
-    printf("5. Back to Main Menu\n");
-    printf("6. LogOut\n");
+    // printf("5. Back to Main Menu\n");
+    printf("5. LogOut\n");
 }
-void showRegisteredEvents(char *username){
+int showRegisteredEvents(char *username){
     Event events[MAX_EVENTS];
     Registration registrations[MAX_REGISTRATIONS];
     int eventCount = 0, registrationCount = 0;
@@ -966,9 +966,9 @@ void showRegisteredEvents(char *username){
     
     if (registeredEventCount == 0) {
         printf("You are not registered for any events.\n");
-        pauseScreen();
-        return;
+        return 0;
     }
+    return 1;
 }
 
 void registerForEvent(char *username) {
@@ -990,16 +990,26 @@ void registerForEvent(char *username) {
         return;
     }
     
-    printf("Available Events:\n");
+    printf("Available/Vacant Events:\n");
     printf("ID\tName\t\tlocation\t\tDate\t\tTime\tRegistered/Max\n");
     printf("------------------------------------------------------------------\n");
     
     for (i = 0; i < eventCount; i++) {
-        printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
-               events[i].id, events[i].name, events[i].location, 
-               events[i].date, events[i].time, 
-               events[i].currentParticipants, events[i].maxParticipants);
-    }
+       int registered = isEventRegistered(events[i].id, username);
+                
+                // If user has registered, mark it
+                if (registered) {
+                    printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d (Registered)\n", 
+                           events[i].id, events[i].name, events[i].location, 
+                           events[i].date, events[i].time, 
+                           events[i].currentParticipants, events[i].maxParticipants);
+                } else {
+                    printf("%d\t%-15s\t%-15s\t%s\t%s\t%d/%d\n", 
+                           events[i].id, events[i].name, events[i].location, 
+                           events[i].date, events[i].time, 
+                           events[i].currentParticipants, events[i].maxParticipants);
+                }
+            }
     
     printf("\nEnter Event ID to register (0 to cancel): ");
     scanf("%d", &eventId);
@@ -1056,7 +1066,7 @@ void cancelRegistration(char *username) {
     Event events[MAX_EVENTS];
     Registration registrations[MAX_REGISTRATIONS];
     int eventCount = 0, registrationCount = 0;
-    int eventId, i, j, found = 0, registeredEventCount = 0;
+    int eventId, i, j, found = 0, registeredEventCount = 0,status = 0;
     
     // Load events and registrations
     loadEventsFromFile(events, &eventCount);
@@ -1065,8 +1075,13 @@ void cancelRegistration(char *username) {
     clearScreen();
     printf("===== CANCEL REGISTRATION =====\n\n");
     
-    showRegisteredEvents(username);
+    status = showRegisteredEvents(username);
     
+    if(!status){
+        pauseScreen();
+        return;
+    }
+
     printf("\nEnter Event ID to cancel registration (0 to cancel): ");
     scanf("%d", &eventId);
     
