@@ -39,6 +39,7 @@ void transferMoney(struct User *user);
 void accountStatement(struct User *user);
 void logTransaction(int accountNumber, const char *type, float amount, float balance);
 void updateUserBalance(struct User *user);
+
 // Input Validation
 int isValidUsername(char *username);
 int isValidPassword(char *password);
@@ -276,15 +277,44 @@ void createAccount()
         }
     }
 
-    // Get user email1
+    // Get valid email and check for duplicates
+
     while (1)
     {
-        printf("\tEnter your email: ");
-        scanf("%s", newUser.email);
-        Bufferflush();
-        if (isValidEmail(newUser.email) != 1)
+        while (1)
         {
-            printf("Error ! due to invalid email format\n");
+            printf("\tEnter your email: ");
+            scanf("%s", newUser.email);
+            Bufferflush();
+            if (isValidEmail(newUser.email) != 1)
+            {
+                printf("Error! Invalid email format.\n");
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        // Check if email already exists
+        f = fopen("userdetail.txt", "r");
+        int emailExists = 0;
+        if (f != NULL)
+        {
+            while (fscanf(f, "%d %s %s %s %f %s %s %s\n", &temp.accountNumber, temp.username, temp.phone, temp.password, &temp.balance, temp.dateOfBirth, temp.address, temp.email) != EOF)
+            {
+                if (strcmp(temp.email, newUser.email) == 0)
+                {
+                    emailExists = 1;
+                    break;
+                }
+            }
+            fclose(f);
+        }
+
+        if (emailExists)
+        {
+            printf("An account with this email already exists. Try entering a different email.\n");
         }
         else
         {
@@ -687,7 +717,7 @@ void exitAnimation()
     system("cls");
 
     printf("\n\n\n\n\n\n\n\n");
-  
+
     printf("\t\t         THANK YOU FOR USING NKB BANK           \n");
     printf("\t\t                                                \n");
     printf("\t\t        Visit Us Again For More Services        \n\n");
@@ -697,10 +727,10 @@ void exitAnimation()
     printf("\t\t         Website: nkbbank.com                   \n\n");
     printf("\t#######################################################################\n");
 
-    sleep(3);      // Wait before closing
+    sleep(3);
+    system("cls"); // Wait before closing
     exit(0);
 }
-
 
 // boot graphics
 void boot()
@@ -954,8 +984,8 @@ void changeEmail(struct User *user)
 {
     system("cls");
     char currentEmail[50], newEmail[50], confirmEmail[50];
-    FILE *file, *tempFile;
-    struct User tempUser;
+    FILE *file, *f, *tempFile;
+    struct User tempUser, temp;
     int found = 0;
     header();
 
@@ -970,29 +1000,60 @@ void changeEmail(struct User *user)
     }
     while (1)
     {
-        printf("\tEnter new Email: ");
-        scanf("%s", newEmail);
-        Bufferflush();
-
-        if (!isValidEmail(newEmail))
+        while (1)
         {
-            printf("Error ! due to invalid email format\n");
-            continue;
-        }
 
+            printf("\tEnter new Email: ");
+            scanf("%s", newEmail);
+            Bufferflush();
+
+            if (!isValidEmail(newEmail))
+            {
+                printf("Error ! due to invalid email format\n");
+                continue;
+            }
+
+            // Check if email already exists for other account number
+            f = fopen("userdetail.txt", "r");
+            int emailExists = 0;
+            if (f != NULL)
+            {
+                while (fscanf(f, "%d %s %s %s %f %s %s %s\n", &temp.accountNumber, temp.username, temp.phone, temp.password, &temp.balance, temp.dateOfBirth, temp.address, temp.email) != EOF)
+                {
+                    if (strcmp(temp.email, newEmail) == 0)
+                    {
+                        emailExists = 1;
+                        break;
+                    }
+                }
+                fclose(f);
+            }
+
+            if (emailExists)
+            {
+                printf("Error ! An account with this email already exists.\n");
+            }
+            else
+            {
+                break;
+            }
+        }
         printf("\tConfirm new Email: ");
         scanf("%s", confirmEmail);
         Bufferflush();
 
         if (strcmp(newEmail, confirmEmail) != 0)
         {
-            printf("\tEmail do not match! Try again.\n");
+            printf("Error! Email do not match! Try again.\n");
+            continue;
         }
         else
         {
+
             break;
         }
     }
+    // Updating the new email in userdetail.txt
     file = fopen("userdetail.txt", "r");
     tempFile = fopen("temp.txt", "w");
     if (file == NULL || tempFile == NULL)
@@ -1033,8 +1094,8 @@ void changePhoneNumber(struct User *user)
 {
     system("cls");
     char currentPhone[50], newPhone[50], confirmPhone[50];
-    FILE *file, *tempFile;
-    struct User tempUser;
+    FILE *file, *f, *tempFile;
+    struct User tempUser, temp;
     int found = 0;
     header();
 
@@ -1049,29 +1110,60 @@ void changePhoneNumber(struct User *user)
     }
     while (1)
     {
-        printf("\tEnter new PhoneNumber: ");
-        scanf("%s", newPhone);
-        Bufferflush();
-
-        if (!isValidPhoneNumber(newPhone))
+        while (1)
         {
-            printf("Error ! due to invalid Phone number format\n");
-            continue;
-        }
 
+            printf("\tEnter new PhoneNumber: ");
+            scanf("%s", newPhone);
+            Bufferflush();
+
+            if (!isValidPhoneNumber(newPhone))
+            {
+                printf("Error ! due to invalid Phone number format\n");
+                continue;
+            }
+
+            // Check if phone number already exists
+            f = fopen("userdetail.txt", "r");
+            int phoneExists = 0;
+            if (f != NULL)
+            {
+                while (fscanf(f, "%d %s %s %s %f %s %s %s\n", &temp.accountNumber, temp.username, temp.phone, temp.password, &temp.balance, temp.dateOfBirth, temp.address, temp.email) != EOF)
+                {
+                    if (strcmp(temp.phone, newPhone) == 0)
+                    {
+                        phoneExists = 1;
+                        break;
+                    }
+                }
+                fclose(f);
+            }
+
+            if (phoneExists)
+            {
+                printf("Error! An account with this phone number already exists.\n");
+            }
+            else
+            {
+                break;
+            }
+        }
         printf("\tConfirm new Phone: ");
         scanf("%s", confirmPhone);
         Bufferflush();
 
         if (strcmp(newPhone, confirmPhone) != 0)
         {
+
             printf("\tPhoneNumber do not match! Try again.\n");
+            continue;
         }
         else
         {
             break;
         }
     }
+    // updating new phone number in userdetail.txt
     file = fopen("userdetail.txt", "r");
     tempFile = fopen("temp.txt", "w");
     if (file == NULL || tempFile == NULL)
