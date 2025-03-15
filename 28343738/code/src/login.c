@@ -99,5 +99,5 @@ int authenticate(char username[50], char password[50]) {
 
     fclose(fp);
     return 0; // Authentication failed
-
+    
 }
