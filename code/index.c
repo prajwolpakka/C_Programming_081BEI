@@ -142,37 +142,52 @@ void add_bus(){
 }
 
 // Remove Bus
-void remove_bus(){
+void remove_bus() {
     system("cls");
-    int found=1;
+    
     char bus_num[10];
     struct Bus bus;
-    FILE *fp = fopen("bus.txt", "r");
-    FILE *temp = fopen("temp.txt", "w");
-    printf("Enter bus number : ");
-    scanf("%s",bus_num);
+    int found = 0;
+
+    FILE *fp = fopen("bus.txt", "r+");
+    if (fp == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    FILE *temp = fopen("temp.txt", "w+");
+    if (temp == NULL) {
+        perror("Error creating temporary file");
+        fclose(fp);
+        return;
+    }
+
+    printf("Enter bus number: ");
+    scanf("%s", bus_num);
     
     while (fscanf(fp, "%s %s %s %d %d", bus.num, bus.pick, bus.drop, &bus.seat, &bus.time1) != EOF) {
         if (strcmp(bus.num, bus_num) == 0) {
-            found=1;
+            found = 1;  
+            continue;
         }
         fprintf(temp, "%s %s %s %d %d\n", bus.num, bus.pick, bus.drop, bus.seat, bus.time1);
     }
+
     fclose(fp);
     fclose(temp);
-    
-    if (remove("bus.txt") != 0) {
-        perror("Error deleting original file");
-    } else if (rename("temp.txt", "bus.txt") != 0) {
-        perror("Error renaming temporary file");
-    } else {
-        if (found) {
-            printf("Bus removed successfully!\n");
-        } else {
-            printf("Bus not found!\n");
-        }
-    }
 
+    if (found) {
+        if (remove("bus.txt") != 0) {
+            perror("Error deleting original file");
+        } else if (rename("temp.txt", "buses.txt") != 0) {
+            perror("Error renaming temporary file");
+        } else {
+            printf("Bus removed successfully!\n");
+        }
+    } else {
+        printf("Bus not found!\n");
+        remove("temp.txt"); 
+    }
 }
 
 
@@ -180,6 +195,7 @@ void remove_bus(){
 void view_passengers(){
     system("cls");
     char bus_num[10];
+    struct Passenger p;
     printf("Enter bus number to view passengers: ");
     scanf("%s", bus_num);
     
@@ -188,10 +204,12 @@ void view_passengers(){
     FILE *fp = fopen(filename, "r");
     if (!fp) {
         printf("No passengers found!\n");
-        exit_program();
+        printf("Enter any key to return to dashboard !!");
+        getch();
+        admin_menu();
     }
     
-    struct Passenger p;
+    else{
     printf("Passenger Name\tSeat Number\n");
     printf("-------------------------------\n");
     while (fscanf(fp, "%s %d", p.name, &p.seatNumber) != EOF) {
@@ -201,6 +219,7 @@ void view_passengers(){
     printf("Enter any key to return to dashboard !!");
     getch();
     admin_menu();
+}
 }
 
 // Client Menu
@@ -234,42 +253,75 @@ void client_menu(){
 }
 
 // Book Ticket
-void book_ticket(){
+void book_ticket() {
     system("cls");
-     struct Bus bus;
+    struct Bus bus;
     char bus_num[10];
     char filename[20];
-    int found=0;
+    int found = 0;
+    struct Passenger temp;
+    struct Passenger p;
+    int seatTaken;
     printf("Enter bus number to book a ticket: ");
     scanf("%s", bus_num);
-    FILE* fp1= fopen("bus.txt","r+");
+
+    FILE *fp1 = fopen("bus.txt", "r+");
+    if (fp1 == NULL) {
+        printf("Error opening bus file.\n");
+        return;
+    }
+
+    // Search for bus
     while (fscanf(fp1, "%s %s %s %d %d", bus.num, bus.pick, bus.drop, &bus.seat, &bus.time1) != EOF) {
         if (strcmp(bus.num, bus_num) == 0) {
             found = 1;
+            break;
         }
     }
-    if(found==1){
-    update_seat_count(bus_num, -1);
+    fclose(fp1);
 
-    
-    sprintf(filename, "bus_%s.txt", bus_num);
-    FILE *fp = fopen(filename, "a");
-    
-    struct Passenger p;
-    printf("Enter passenger name: ");
-    scanf("%s", p.name);
-    printf("Enter seat number: ");
-    scanf("%d", &p.seatNumber);
-    
-    fprintf(fp, "%s %d\n", p.name, p.seatNumber);
-    fclose(fp);
-    printf("Ticket booked successfully!\n");
+    if (found == 1) {
+        update_seat_count(bus_num, -1);
+        sprintf(filename, "bus_%s.txt", bus_num);
+        
+        FILE *fp = fopen(filename, "a+"); // Open file in append+read mode
+        if (fp == NULL) {
+            printf("Error opening booking file.\n");
+            return;
+        }
+
+        
+        do {
+            seatTaken = 0;
+            printf("Enter passenger name: ");
+            scanf("%s", p.name);
+            printf("Enter seat number: ");
+            scanf("%d", &p.seatNumber);
+
+            // Check if seat number is already booked
+            
+            rewind(fp); // Move pointer to the start of file
+            while (fscanf(fp, "%s %d", temp.name, &temp.seatNumber) != EOF) {
+                if (temp.seatNumber == p.seatNumber) {
+                    printf("Seat number %d is already booked! Choose another seat.\n", p.seatNumber);
+                    seatTaken = 1;
+                    break;
+                }
+            }
+        } while (seatTaken);
+
+        // Write passenger details to file
+        fprintf(fp, "%s %d\n", p.name, p.seatNumber);
+        fclose(fp);
+
+        printf("Ticket booked successfully!\n");
+    } else {
+        printf("Bus not found.\n");
     }
-    else{
-        printf("Bus not found ");
-        printf("Enter any key to go to dashboard !!");
-        getch();
-    }
+
+    printf("Enter any key to go to the dashboard!!");
+    getch();
+    client_menu();
 }
 
 // Cancel Ticket
@@ -304,8 +356,14 @@ void cancel_ticket(){
     if (found) {
         update_seat_count(bus_num, 1);
         printf("Ticket canceled successfully!\n");
+        printf("Enter any key to go to dashboard !!");
+        getch();
+        client_menu();
     } else {
         printf("Passenger not found!\n");
+        printf("Enter any key to go to dashboard !!");
+        getch();
+        client_menu();
     }
 }
 

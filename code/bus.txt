@@ -1,2 +1,2 @@
-123 Kathmandu pokhara 13 1
-111 Pokhara chitwan 12 5
+111 pokhara kathmandu 13 2
+123 kathmandu mustang 10 2
