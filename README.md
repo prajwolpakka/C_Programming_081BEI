@@ -1,64 +1,97 @@
-# C Programming Project Submission
+# TrackHer - Period Tracking Calendar
 
-Welcome to the **C Programming Project Repository (081BEI)**. Each team is required to submit their project by following the instructions below.
+TrackHer is a lightweight, offline period tracking application developed in C and Raylib. It allows users to log menstrual cycles, predict future periods, and estimate ovulation.
 
-## 📌 Submission Instructions
+## 🚀 Features
+- **Menstrual Cycle Tracking** – Log period start dates and symptoms.
+- **Cycle Prediction Algorithm** – Estimates next period and fertile window.
+- **Interactive Raylib UI** – Simple graphical interface for ease of use.
+- **Offline & Privacy-Focused** – No internet connection required.
 
-1. **One team member forks this repository** into their GitHub account (Team Lead):
-   - Go to the instructor's repository: [C_Programming_081BEI](https://github.com/prajwolpakka/C_Programming_081BEI).
-   - Click the **Fork** button at the top-right corner to create a copy under your GitHub account.
+## 💻 Tech Stack
+- **Programming Language:** C
+- **Graphics & UI:** Raylib
+- **Data Storage:** TXT/DAT file handling
 
-2. **The entire team clones the forked repository**:
+## 📂 Project Structure
+
+```
+📦 code
+ ┣ 📂 data                # Stores user cycle data and log_in records
+ ┣ 📂 images              # UI assets i.e. icons and image
+ ┣ 📂 src                 # Source code
+ ┃ ┣ 📜 backend.c         # Core logic for cycle tracking
+ ┃ ┣ 📜 backend.h         # Header file for backend functions
+ ┃ ┣ 📜 calender.c        # Calendar functionalities
+ ┃ ┣ 📜 calender.h        # Header file for calendar logic
+ ┃ ┣ 📜 login.c           # User authentication
+ ┃ ┣ 📜 login.h           # Header file for login system
+ ┃ ┣ 📜 main.c            # Main entry point and login ui
+ ┃ ┣ 📜 page_choice.c     # Handles page selection
+ ┃ ┣ 📜 page_choice.h     # Header file for page choice
+ ┃ ┣ 📜 page_insight.c    # Insights and analytics
+ ┃ ┣ 📜 page_insight.h    # Header file for insights
+ ┃ ┣ 📜 trial.exe         # Compiled executable for testing
+```
+
+## 🛠 Installation & Setup
+
+### Prerequisites
+- GCC Compiler
+- Raylib (Graphics Library)
+
+### Steps to Install
+
+#### Clone the repository:
+```bash
+git clone https://github.com/connect-Prajwal-khanal/C_Programming_081BEI.git
+```
+
+#### Install Dependencies:
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update && sudo apt install build-essential libasound2-dev
+```
+
+#### Install Raylib:
+```bash
+sudo apt install libraylib-dev
+```
+
+**Windows:**  
+Download and install Raylib manually.
+
+#### Compile the Project:
+```bash
+gcc -o trial.exe main.c login.c page_choice.c page_insight.c backend.c calender.c -I C:\raylib\include -L C:\raylib\lib -lraylib -lm -lwinmm -lgdi32
+```
+
+#### Run the Application:
+```bash
+./trackher
+```
+
+## 🤝 Contributing
+1. Fork the repository.
+2. Create a feature branch:  
    ```bash
-   git clone https://github.com/TEAM_LEAD_USERNAME/C_Programming_081BEI.git
+   git checkout -b 28343738
    ```
-
-3. **Create a new branch** for your team using your roll numbers in ascending order, formatted as two-digit numbers.  
-   - Example: If the team consists of roll numbers **1, 4, 5, 45**, the branch name should be:
-     ```
-     01040545
-     ```
-   - Create the branch using the following command:
-     ```bash
-     git checkout -b 01040545
-     ```
-
-4. **Make changes in your cloned repository** by adding project files inside a folder named after your branch name:
-   - `01040545/proposal/` → Your project proposal document.
-   - `01040545/code/` → Your source code files.
-   - `01040545/report/` → Your final report.
-   - `01040545/slide/` → Presentation slides.
-
-5. **Commit and push changes** to the forked repository:
+3. add changes:  
    ```bash
    git add .
-   git commit -m "Added project submission for team 01040545"
-   git push origin 01040545
    ```
+4. Commit changes:  
+   ```bash
+   git commit -m 'Added new feature'
+   ```
+5. Push to the branch:  
+   ```bash
+   git push origin 28343738
+   ```
+6. Create a pull request.
 
-6. **The Team Lead opens a Pull Request (PR)** from their forked repository to the `main` branch of this repository.
-7. **Submit the PR link** to the instructor for review.
+## 💡 Designed and Developed by:
 
-## 📂 Folder Structure
-Ensure your files are placed inside a folder named after your branch name:
-```
-C_Programming_081BEI/
-│-- 01040545/
-│   │-- proposal/
-│   │   ├── team_project_proposal.pdf
-│   │-- code/
-│   │   ├── main.c
-│   │   ├── additional_files.c
-│   │-- report/
-│   │   ├── team_project_report.pdf
-│   │-- slide/
-│   │   ├── team_presentation.pdf
-```
-
-## ❗ Important Notes
-- Each team should submit only **one PR** per group.
-- The **branch name must follow the roll number format** to avoid confusion.
-- Ensure your code is well-documented and formatted correctly.
-
-For any questions, contact the instructor. Happy coding! 🚀
+Prajwal Khanal, Ranjana Kumari Jha, Shakshi Gyawali, Shaunak Baniya 🚀
 
