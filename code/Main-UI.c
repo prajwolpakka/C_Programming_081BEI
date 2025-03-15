@@ -24,7 +24,7 @@ void header();
 void boot(); // Boot Graphics
 void exitAnimation();
 
-// User-Info Managment
+// User-Info Management
 void viewinfo(struct User *user);
 void changePassword(struct User *user);
 void changeEmail(struct User *user);
@@ -49,7 +49,7 @@ int isValidEmail(char *email);
 void lowercase(char str[]);
 void continueKey();
 void Bufferflush();
-void encryptPassword(char *password);
+void encryptPassword(char *password, int key); // password mask using(*)
 
 // Main function
 int main()
@@ -92,7 +92,7 @@ System_dash:
     }
     else if (choice == 3)
     {
-        printf("\tThank you! Visit us again.\n");
+        // printf("\tThank you! Visit us again.\n");
         exitAnimation();
     }
 
@@ -367,10 +367,9 @@ void createAccount()
     }
 
     // Getting Password...
-
     while (1)
     {
-        encryptPassword(newUser.password);
+        encryptPassword(newUser.password, 1); // key==1
         if (isValidPassword(newUser.password) != 1)
         {
             printf("\tError! Too weak password. Try again.\n\tNote:Password should be at least 8 character long and should consist of least 1 uppercase, 1 lowercase, 1 digit and 1 special character.\n");
@@ -389,6 +388,7 @@ void createAccount()
     sleep(1);
     printf("\t\t Almost there....\n\n");
     sleep(1);
+
     // Save user details to file
     file = fopen("userdetail.txt", "a"); // opening file in append mode
     if (file == NULL)
@@ -412,6 +412,7 @@ int login(struct User *user)
     int accountNumber;
     char username[50];
     char password[50];
+
     FILE *file = fopen("userdetail.txt", "r");
     header();
 
@@ -430,8 +431,9 @@ int login(struct User *user)
     scanf("%s", username);
     lowercase(username);
     Bufferflush();
-
-    encryptPassword(password); // encryption while entering password
+    
+//Getting password from user
+    encryptPassword(password,4); //key 4 // encryption while entering password
     printf("\n\t\tPlease wait....\n");
     sleep(1);
 
@@ -752,12 +754,31 @@ void boot()
     }
     sleep(1);
 }
-void encryptPassword(char *password)
+// for login and create account
+void encryptPassword(char *password, int key)
 {
     char ch;
     int i = 0;
-
-    printf("\tEnter valid and strong password: ");
+    if (key == 1)
+    {
+        printf("\tEnter valid and strong password: ");
+    }
+    else if (key == 2)
+    {
+        printf("\tEnter current password: ");
+    }
+    else if (key == 3)
+    {
+        printf("\n\tEnter new password: ");
+    }
+    else if (key == 4)
+    {
+        printf("\tEnter your password: ");
+    }
+    else
+    {
+        printf("\n\tEnter cofirm password: ");
+    }
     while (1)
     {
         ch = getch(); // Read character without displaying it
@@ -909,10 +930,8 @@ void changePassword(struct User *user)
     int found = 0;
 
     header();
-
-    printf("\tEnter your current password: ");
-    scanf("%s", currentPassword);
-    Bufferflush();
+    // Getting current password from user
+    encryptPassword(currentPassword, 2); // key==2
     if (strcmp(user->password, currentPassword) != 0)
     {
         printf("\tIncorrect password!\n");
@@ -921,20 +940,16 @@ void changePassword(struct User *user)
     }
     while (1)
     {
-        printf("\tEnter new password: ");
-        scanf("%s", newPassword);
-        Bufferflush();
-
+        // Getting new password from user
+        encryptPassword(newPassword, 3); // key==3
         if (!isValidPassword(newPassword))
         {
             printf("\tError! Too weak password. Try again.\n\tNote: Password should be at least 8 characters long and contain at least 1 uppercase, 1 lowercase, 1 digit, and 1 special character.\n");
             continue;
         }
 
-        printf("\tConfirm new password: ");
-        scanf("%s", confirmPassword);
-        Bufferflush();
-
+        // Getting confirm password from user
+        encryptPassword(confirmPassword, 4); // key==4
         if (strcmp(newPassword, confirmPassword) != 0)
         {
             printf("\tPasswords do not match! Try again.\n");
@@ -975,7 +990,7 @@ void changePassword(struct User *user)
     {
         remove("userdetail.txt");
         rename("temp.txt", "userdetail.txt");
-        printf("\tPassword changed successfully!\n");
+        printf("\n\tPassword changed successfully!\n");
     }
 
     continueKey();
