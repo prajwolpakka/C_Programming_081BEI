@@ -949,7 +949,7 @@ void changePassword(struct User *user)
         }
 
         // Getting confirm password from user
-        encryptPassword(confirmPassword, 4); // key==4
+        encryptPassword(confirmPassword, 5); // key==4
         if (strcmp(newPassword, confirmPassword) != 0)
         {
             printf("\tPasswords do not match! Try again.\n");
