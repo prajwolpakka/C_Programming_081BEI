@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <unistd.h>
+#include <windows.h>
 #include <stdio.h>
 #include <time.h>
 #include <ctype.h>
@@ -62,12 +62,13 @@ System_dash:
     header();
     // Ask for account creation or login
     printf("\n\t\t\t - - *** NAMASTE *** - - \n\n");
+    Sleep(1000);
     printf("\t1. Create a Bank Account\n");
-    sleep(1);
+    Sleep(400);
     printf("\t2. Already Have An Accont? -> Login\n");
-    sleep(1);
+    Sleep(400);
     printf("\t3. Exit Bank\n\n");
-    sleep(1);
+    Sleep(700);
     printf("\tEnter your choice: ");
     scanf("%d", &choice);
     Bufferflush();
@@ -146,7 +147,7 @@ Customer_dash:
                 printf("\t3 --> Change Email\n");
                 printf("\t4 --> Change Phone Number\n");
                 printf("\t5 --> Back\n\n");
-                sleep(1);
+                Sleep(600);
                 printf("\tEnter your choice: ");
                 scanf("%d", &choice);
                 Bufferflush();
@@ -225,7 +226,7 @@ void createAccount()
 
         if (isValidUsername(newUser.username) != 1)
         {
-            printf("Error!. Please try again.\n Note: Username must be 5 - 30 characters long and must contain only letters.\n");
+            printf("\tInvalid username! Please try again. \nNote: Username must be 5-30 characters long and contain only letters.\n");
         }
 
         else
@@ -241,7 +242,7 @@ void createAccount()
         Bufferflush();
         if (isValidDateFormat(newUser.dateOfBirth) != 1)
         {
-            printf("Error!. Ensure date format is same as mentioned\n");
+            printf("\tError! Ensure the date format is YYYY-MM-DD.\n");
         }
         else
         {
@@ -273,7 +274,7 @@ void createAccount()
         }
         else
         {
-            printf("Error! Address must contain only alphanumeric characters. Please try again.\n");
+            printf("\tError! Address must contain only alphanumeric characters. Please try again.\n");
         }
     }
 
@@ -288,7 +289,7 @@ void createAccount()
             Bufferflush();
             if (isValidEmail(newUser.email) != 1)
             {
-                printf("Error! Invalid email format.\n");
+                printf("\tError! Invalid email format.\n");
             }
             else
             {
@@ -314,7 +315,7 @@ void createAccount()
 
         if (emailExists)
         {
-            printf("An account with this email already exists. Try entering a different email.\n");
+            printf("\tError! An account with this email already exists. Please try a different email.\n");
         }
         else
         {
@@ -332,7 +333,7 @@ void createAccount()
             Bufferflush();
             if (isValidPhoneNumber(newUser.phone) != 1)
             {
-                printf("Erro! due to invalid phone number\n");
+                printf("\tError! Invalid phone number\n");
             }
             else
             {
@@ -358,7 +359,7 @@ void createAccount()
 
         if (phoneExists)
         {
-            printf("An account with this phone number already exists. Try entering with a different phone number.\n");
+            printf("\tAn account with this phone number already exists. Try entering with a different phone number.\n");
         }
         else
         {
@@ -372,7 +373,9 @@ void createAccount()
         encryptPassword(newUser.password, 1); // key==1
         if (isValidPassword(newUser.password) != 1)
         {
-            printf("\tError! Too weak password. Try again.\n\tNote:Password should be at least 8 character long and should consist of least 1 uppercase, 1 lowercase, 1 digit and 1 special character.\n");
+            printf("\tError! Too weak password. Try again.\n");
+            printf("\tNote: Password should contain at least 8 characters, ");
+            printf("1 uppercase letter, 1 lowercase letter, 1 digit, and 1 special character.\n");
         }
 
         else
@@ -384,11 +387,7 @@ void createAccount()
     newUser.accountNumber = lastAccNo + 1;
     newUser.balance = 0.0;
 
-    printf("\n\t\t Please wait! Your data is being processed....\n");
-    sleep(1);
-    printf("\t\t Almost there....\n\n");
-    sleep(1);
-
+    
     // Save user details to file
     file = fopen("userdetail.txt", "a"); // opening file in append mode
     if (file == NULL)
@@ -398,6 +397,11 @@ void createAccount()
     }
     fprintf(file, "%d %s %s %s %.2f %s %s %s\n", newUser.accountNumber, newUser.username, newUser.phone, newUser.password, newUser.balance, newUser.dateOfBirth, newUser.address, newUser.email);
     fclose(file);
+
+    printf("\n\t\t Please wait! Your data is being processed....\n");
+    Sleep(600);
+    printf("\t\t Almost there....\n\n");
+    Sleep(400);
 
     printf("\tAccount created successfully!\n");
     printf("\tYour account number is: %d\n", newUser.accountNumber);
@@ -435,7 +439,7 @@ int login(struct User *user)
 //Getting password from user
     encryptPassword(password,4); //key 4 // encryption while entering password
     printf("\n\t\tPlease wait....\n");
-    sleep(1);
+    Sleep(700);
 
     // Search for the user in the file
     while (fscanf(file, "%d %s %s %s %f %s %s %s", &user->accountNumber, user->username, user->phone, user->password, &user->balance, user->dateOfBirth, user->address, user->email) != EOF)
@@ -729,7 +733,9 @@ void exitAnimation()
     printf("\t\t         Website: nkbbank.com                   \n\n");
     printf("\t#######################################################################\n");
 
-    sleep(3);
+    Sleep(3);
+    printf("\n\n(Press any key to exit.)");
+    getch();
     system("cls"); // Wait before closing
     exit(0);
 }
@@ -738,21 +744,21 @@ void exitAnimation()
 void boot()
 {
     printf("\n\n\n\n");
-    printf("\t\t\tNNNN    N  K   K  BBBBB      BBBBB    AAAAA  NNNN    N  K   K\n");
-    printf("\t\t\tN   N   N  K  K   B    B     B    B   A   A  N   N   N  K  K\n");
-    printf("\t\t\tN    N  N  KK     BBBBB      BBBBB    AAAAA  N    N  N  KK\n");
-    printf("\t\t\tN     N N  K  K   B    B     B    B   A   A  N     N N  K  K\n");
-    printf("\t\t\tN      NN  K   K  BBBBB      BBBBB    A   A  N      NN  K   K\n");
-    printf("\n\n\t\t\t\t\t\tWELCOMES YOU!\n\n");
-    sleep(1);
-    printf("\t\t\t");
+    printf("\t\tNNNN    N  K   K  BBBBB      BBBBB    AAAAA  NNNN    N  K   K\n");
+    printf("\t\tN   N   N  K  K   B    B     B    B   A   A  N   N   N  K  K\n");
+    printf("\t\tN    N  N  KK     BBBBB      BBBBB    AAAAA  N    N  N  KK\n");
+    printf("\t\tN     N N  K  K   B    B     B    B   A   A  N     N N  K  K\n");
+    printf("\t\tN      NN  K   K  BBBBB      BBBBB    A   A  N      NN  K   K\n");
+    printf("\n\n\t\t\t\t\tWELCOMES YOU!\n\n");
+    Sleep(100);
+    printf("\t\t");
 
     for (int i = 0; i < 62; i++)
     {
         printf("_");
-        sleep(0.4);
+        Sleep(7);
     }
-    sleep(1);
+    Sleep(100);
 }
 // for login and create account
 void encryptPassword(char *password, int key)
@@ -918,7 +924,7 @@ void viewinfo(struct User *user)
     printf("\tDOB: %s BS\n", user->dateOfBirth);
     printf("\tAddress: %s\n", user->address);
     printf("\tEmail: %s\n\n", user->email);
-    // sleep(3);
+    // Sleep(3);
     continueKey();
 }
 void changePassword(struct User *user)
