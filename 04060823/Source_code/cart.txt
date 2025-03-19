@@ -10,3 +10,4 @@
 8     | Ikigai                    | Francesc Miralles    | Self-help                                     | RS 1899    | Date of Purchase: 2025-03-13 19:48:01
 20    | The Theory of Everything  | Stephen Hawking      | Science                                       | RS 500     | Date of Purchase: 2025-03-15 14:42:12
 7     | Ikigai                    | Francesc Miralles    | Novel                                         | RS 1600    | Date of Purchase: 2025-03-15 15:01:27
+21    | kafka on the shore        | haruki               | nvoel                                         | RS 1239    | Date of Purchase: 2025-03-16 11:33:32

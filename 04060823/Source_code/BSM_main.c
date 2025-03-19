@@ -27,9 +27,8 @@ again:
 
     default:
         printf("Invalid input\n");
-        system("cls");
+        exit(0);
         goto again;
-        break;
     }
     return 0;
 }

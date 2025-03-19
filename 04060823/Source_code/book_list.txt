@@ -19,3 +19,4 @@ No.   | Book Name                               | Author                        
 17    | The Kite Runner                     | Khaled Hosseini           | Novel                                              | RS 1100      
 18    | A Thousand Splendid Suns            | Khaled Hosseini           | Novel                                              | RS 1200      
 20    | The Theory of Everything            | Stephen Hawking           | Science                                            | RS 600       
+21    | kafka on the shore                  | haruki                    | nvoel                                              | RS 1239      
