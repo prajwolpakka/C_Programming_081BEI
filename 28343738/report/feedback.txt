@@ -1,0 +1,26 @@
+Page 3:
+- Use paragraph alignment
+
+Page 7:
+- Use paragraph alignment
+- Abstract is summary of the project, shouldn't be longer than one paragraph and 150 words.
+- Keywords should be in ascending order
+
+Page 8:
+- Error in the List of Figures page number.
+
+Page 10:
+- List of figures and List of abbreviations should be in different page
+- List of abbreviations should be in ascending order
+
+Page 11-16:
+- use paragraph alignment
+
+Page 17, 21, 23:
+- New topic should start in new page
+
+Page 27:
+- Too much top margin
+
+Page 28:
+- Too much top margin

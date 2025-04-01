@@ -1,0 +1,12 @@
+Page 6:
+- Keywords should be in ascending order
+
+Page 9:
+- Should include page number
+- Should be auto generated not manually typed
+
+Page 10:
+- Should be in ascending order
+
+Page 18,19,21:
+- Text in image is too small

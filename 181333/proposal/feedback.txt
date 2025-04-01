@@ -1,0 +1,14 @@
+Page 1:
+- Roll number should be in ascending order
+
+Page 2:
+- There should be no acknowledgement page in proposal
+
+Page 3:
+- Keywords should be in ascending order
+
+Page 6:
+- Should be in ascending order
+
+Page 18:
+- Content goes beyond right margin

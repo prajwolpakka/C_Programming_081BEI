@@ -1,0 +1,6 @@
+Page 2:
+- There should be no Acknowledgement page in proposal
+
+Page 8:
+- List of Abbreviations should be in alphabetical order
+

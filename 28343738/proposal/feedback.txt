@@ -1,0 +1,19 @@
+Page 2:
+- Keywords should be in ascending order
+
+Page 5:
+- Should include page number
+- Should be auto generated not typed
+
+Page 6:
+- Should be in ascending order
+
+Page 7:
+- Redundant Empty page
+
+Page 10, 17, 19:
+- New topic should start in new page
+
+Page 19:
+- Text in image is too small
+- Documentation should be during entire phase of project

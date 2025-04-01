@@ -1,0 +1,23 @@
+Page 1:
+- Roll Number should be in ascending order
+
+Page 2:
+- There should be no Acknowledgement page in proposal
+- Roll number should be in ascending order
+
+Page 3:
+- Use Paragraph Alignment
+- Put Keywords in ascending order
+
+Page 4:
+- Font Color should always be black
+- Use Paragraph Alignment
+
+Page 6:
+- New topic should start on different page. i.e. Literature Review and Proposed System Architecture
+
+Page 7:
+- New topic should start on different page.
+- Use gantt chart for time estimation
+
+

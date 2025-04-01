@@ -1,0 +1,24 @@
+Page 1:
+- Roll number should be in ascending order
+
+Page 2:
+- Roll number should be in ascending order
+
+Page 4:
+- Write the title of the project 
+
+Page 6:
+- Roll number should be in ascending order
+
+Page 7:
+- Use paragraph alignment
+- Include Keywords
+
+Page 12:
+- Too much top margin
+
+Page 19-34:
+- Use paragraph alignment
+
+Page 35:
+- Links have different colors

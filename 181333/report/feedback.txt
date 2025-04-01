@@ -1,0 +1,11 @@
+Page 7:
+- Abstract should be in ascending order
+
+Page 11:
+- Should be in ascending order
+
+Page 18:
+- Blurry image
+
+Page 33:
+- Content goes beyond right margin

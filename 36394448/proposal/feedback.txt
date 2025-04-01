@@ -1,0 +1,26 @@
+Page 1:
+- Logo is cropped
+- Roll number should be in ascending order
+
+Page 2:
+- Same indentation should be there in abstract and keywords
+- Keywords should be in ascending order
+
+Page 4:
+- Same line spacing should be used
+
+Page 5:
+- Too much top margin
+
+Page 7:
+- Different starting point for the content
+
+Page 8, 9:
+- Use paragraph alignment
+
+Page 16:
+- Scope include what your project will be able to do and what it won't do.
+
+Page 18-23:
+- Too much Right margin
+- Use paragraph alignment

@@ -1,0 +1,19 @@
+Page 1:
+- Roll number should be in ascending order
+
+Page 2:
+- Unwanted blank page
+
+Page 3:
+- Include Keywords in Abstract
+
+Page 6:
+- List of Tables and list of Abbreviations should be in different page
+- Abbreviations should be in ascending order
+
+Page 15:
+- Different headings should be in different page
+
+Page 16:
+- All links should be formatted in same style
+- Should follow IEEE style for references.

@@ -1,0 +1,15 @@
+Page 3:
+- Incorrect spelling of HOD
+
+Page 6:
+- Keywords should be in ascending order
+
+Page 8:
+- TOC, List of Tables, and List of Diagrams, List of Abbreviations should have different pages.
+
+Page 17:
+- Texts are extremely small in the image
+
+Page 21:
+- New title should start in new page
+

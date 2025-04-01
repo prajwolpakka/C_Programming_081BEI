@@ -1,0 +1,31 @@
+Page 1:
+- Institute of Engineering and Thapathali Campus should be in separate lines
+- Roll number should be in ascending order
+
+Page 2:
+- Use paragraph alignment
+
+Page 3:
+- Use paragraph alignment
+
+Page 4:
+- Use paragraph alignment
+
+Page 6:
+- Ascending order in Keywords
+
+Page 10:
+- Should be in ascending order
+
+Page 11-42:
+- Use paragraph alignement
+
+Page 15:
+- Dont use color in image, if it doesn't add value 
+
+Page 19:
+- Image resolution is low, text is hard to read
+
+Page 22:
+- Dont use color in image, if it doesn't add value 
+

@@ -1,0 +1,14 @@
+Page 1,2:
+- Inconsistent naming for Shikshit
+
+Page 5, 7, 8:
+- Inconsistent top margin
+
+Page 7:
+- Keywords should be in ascending order
+
+Page 11:
+- Should be in ascending order
+
+Page 27:
+- Spelling mistake in title

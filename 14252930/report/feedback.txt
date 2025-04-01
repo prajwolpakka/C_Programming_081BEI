@@ -1,0 +1,11 @@
+Page 4:
+- Spelling incorrect for the name of HOD
+
+Page 5:
+- Why is date above the title ?
+
+Page 22:
+- Implementation details is where you explain how you created the project.
+
+Page 27:
+- Should have consistency in all links

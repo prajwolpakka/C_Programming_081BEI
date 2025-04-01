@@ -1,0 +1,18 @@
+Page 2:
+- Keywords should be in ascending order
+
+Page 3:
+- The page numbes are not aligned straight
+
+Page 5:
+- Should include page number
+- Spelling incorrect
+
+Page 6:
+- Should be in ascending order
+
+Page 19:
+- Very less content for an entire page
+
+Page 20:
+- Documentation should be done during the entire project timeline

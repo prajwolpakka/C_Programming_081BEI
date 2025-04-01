@@ -1,0 +1,19 @@
+Page 1:
+- Institute of Engineering and Thapathali Campus should be in separate lines
+- Roll number should be in ascending order
+
+Page 2:
+- No need for Acknowledgement in Proposal
+
+Page 3:
+- Keywords should be in ascending order
+
+Page 6:
+- Should be in ascending order
+
+Page 11:
+- font extremely small in the image
+
+Page 12:
+- font extremely small in the image
+

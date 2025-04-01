@@ -1,0 +1,20 @@
+Page 2:
+- Redundant Empty page
+
+Page 3:
+- Unupdated Abstract
+
+Page 5:
+- Different page for List of Figures and List of Abbreviations
+- Update the content for the List of Figures
+- Update the content for the List of Abbreviations
+
+Page 6:
+- Redundant Empty page
+
+Page 11:
+- Update the content
+
+Page 14:
+- No gantt chart
+

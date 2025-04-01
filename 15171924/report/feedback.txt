@@ -1,0 +1,27 @@
+Page 1,2:
+- Roll numbers should be in ascending order
+
+Page 3:
+- Incorrect Spelling for Project Supervisor
+- Incorrect name for External Examiner, and project coordinator, and HOD
+
+Page 5:
+- Roll numbers should be in ascending order
+
+Page 6:
+- Keywords should be in alphabetical order
+
+Page 10:
+- Should be in alphabetical order
+
+Page 18:
+- Too less content in a page
+
+Page 21,22:
+- Different titles should start in new page
+
+Page 23, 31:
+- Use paragraph alignment 
+
+Page 32:
+- Use IEEE style for references and keep the references style consistent

@@ -1,0 +1,22 @@
+Page 1:
+- This is not the major project, So, the title should be "A Project Report ..
+
+Page 2:
+- This is not the major project, So, the title should be "A Project Report ..
+- Change the name of supervisor
+
+Page 4:
+- Incorrect name of Project Supervisor, Project Coordinator
+
+Page 5:
+- Incorrect name of Supervisor
+
+Page 7:
+- Tribhuvan University in Contents ?
+
+Page 9:
+- Use Paragraph Alignement
+- Incorrect margin in the right side
+
+Page 21:
+- Use different page for conclusion and references
